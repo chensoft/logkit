@@ -1,14 +1,13 @@
 [package]
-name = "veloce"
+name = "logkit"
 version = "0.1.0"
 edition = "2021"
-
-[profile.release]
-debug = 1           # Add line numbers only
-opt-level = "z"     # Optimize for size
-lto = true          # Enable link-time optimization
-codegen-units = 1   # Reduce number of codegen units to increase optimizations
-
-[build-dependencies]
+authors = ["Jian Chen <admin@chensoft.com>"]
+license = "MIT"
+description = "A brand new logging library"
+documentation = "https://docs.rs/logkit"
+repository = "https://github.com/chensoft/logkit"
+readme = "README.md"
+keywords = ["logkit", "log", "logger", "logging"]
 
 [dependencies]

@@ -1,0 +1,24 @@
+name: macOS
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    target: aarch64-apple-darwin
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          profile: minimal
+
+      - uses: actions-rs/cargo@v1
+        with:
+          command: version
+
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
