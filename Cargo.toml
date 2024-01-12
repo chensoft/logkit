@@ -11,3 +11,4 @@ readme = "README.md"
 keywords = ["logkit", "log", "logger", "logging"]
 
 [dependencies]
+log = "=0.4.20"
