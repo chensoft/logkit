@@ -1,6 +1,7 @@
 * read log level from env
 * specify stdout or stderr
 * limit level in compile time using features
+* use atomic to store level
 * default static logger and default macros
 * user can create custom logger
 * switch between plain log and structure log
@@ -13,5 +14,15 @@
 * log rotate by filesize, filenum, daily, hourly...
 * record stacktrace if enabled for some levels
 * hook output function allow to continue or discard
+* hook output by level
+* hook allow to modify output text
 * multiple output targets
 * add benchmarks
+* time format like 2022-08-31T21:00:29.123+01:00
+* allow to set timezone, default use local tz
+* multiple output method, default json
+* console output like 2022-09-01T10:03:06.123+01:00 D main.rs:15 > debug message pid=12345 foo=bar
+* color support in console output
+* highlight keywords in console output
+* sampling by level
+* fatal level handler, default panic
