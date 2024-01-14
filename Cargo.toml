@@ -4,11 +4,10 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Jian Chen <admin@chensoft.com>"]
 license = "MIT"
-description = "A brand new logging library"
+description = "Super fast, structured, scaleable logging library for Rust"
 documentation = "https://docs.rs/logkit"
 repository = "https://github.com/chensoft/logkit"
 readme = "README.md"
 keywords = ["logkit", "log", "logger", "logging"]
 
 [dependencies]
-log = "=0.4.20"
