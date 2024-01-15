@@ -26,3 +26,7 @@
 * highlight keywords in console output
 * sampling by level
 * fatal level handler, default panic
+* disable levels using features at compile time
+* allow log! return string
+* allow log! close output
+* no std support?
