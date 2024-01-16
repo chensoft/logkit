@@ -1,9 +1,10 @@
 //! mod logger
-use super::types::*;
+use super::consts::*;
 use super::record::*;
 
 pub struct Logger {
     pub level: Level,
+    // todo targets
 }
 
 impl Logger {

@@ -1,8 +1,10 @@
+mod consts;
 mod logger;
 mod macros;
 mod record;
-mod types;
+mod target;
 
+pub use consts::*;
 pub use logger::*;
 pub use record::*;
-pub use types::*;
+pub use target::*;

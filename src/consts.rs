@@ -1,5 +1,4 @@
-//! mod types
-// pub(crate) use std::collections::BTreeMap;
+//! mod consts
 
 /// Level
 pub type Level = i32;
@@ -10,6 +9,28 @@ pub const LEVEL_INFO  : Level = 2;
 pub const LEVEL_WARN  : Level = 3;
 pub const LEVEL_ERROR : Level = 4;
 pub const LEVEL_OFF   : Level = i32::MAX;
+
+pub fn level_to_str(level: Level) -> &'static str {
+    match level {
+        LEVEL_TRACE => "trace",
+        LEVEL_DEBUG => "debug",
+        LEVEL_INFO => "info",
+        LEVEL_WARN => "warn",
+        LEVEL_ERROR => "error",
+        _ => "",
+    }
+}
+
+pub fn str_to_level(level: &str) -> Level {
+    match level {
+        "trace" => LEVEL_TRACE,
+        "debug" => LEVEL_DEBUG,
+        "info" => LEVEL_INFO,
+        "warn" => LEVEL_WARN,
+        "error" => LEVEL_ERROR,
+        _ => LEVEL_OFF,
+    }
+}
 
 /// todo rename Appender
 pub trait Appender {

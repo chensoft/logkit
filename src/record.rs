@@ -1,5 +1,7 @@
 //! mod record
-use super::types::*;
+use super::consts::*;
+
+pub trait Format {} // todo useless?
 
 pub struct Record {
     pub capacity: usize,
@@ -14,7 +16,7 @@ impl Record {
     }
 
     pub fn append(&mut self, key: &str, val: impl Appender) -> &mut Self {
-        self.buffer.push('"');
+        self.buffer.push('"'); // todo make a fn
         self.buffer.push_str(key);
         self.buffer.push_str("\":");
         val.append(&mut self.buffer);
