@@ -1,8 +1,5 @@
-* read log level from env
 * specify stdout or stderr
 * limit level in compile time using features
-* use atomic to store level
-* default static logger and default macros
 * user can create custom logger
 * switch between plain log and structure log
 * log can have prefix

@@ -1,20 +1,27 @@
 //! mod record
-use super::consts::*;
+use super::define::*;
 
 pub trait Format {} // todo useless?
 
 pub struct Record {
-    pub capacity: usize,
-    pub buffer: String,
+    level: Level,
+    capacity: usize,
+    buffer: String,
 }
 
 impl Record {
-    pub fn new(capacity: usize) -> Self {
-        let mut obj = Record { capacity, buffer: String::new() };
+    pub fn new(level: Level, capacity: usize) -> Self {
+        let mut obj = Record { level, capacity, buffer: String::new() };
         obj.flush();
         obj
     }
 
+    #[inline]
+    pub fn level(&self) -> Level {
+        self.level
+    }
+
+    #[inline]
     pub fn append(&mut self, key: &str, val: impl Appender) -> &mut Self {
         self.buffer.push('"'); // todo make a fn
         self.buffer.push_str(key);

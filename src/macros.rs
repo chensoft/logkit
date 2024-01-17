@@ -39,27 +39,33 @@ macro_rules! record {
     // record!(logkit::LEVEL_TRACE);
     // {}
     ($lvl:expr) => {{
-        $crate::Logger::new().record($lvl);
+        let logger = $crate::Logger::def().read();
+        if logger.allow($lvl) {
+            logger.spawn($lvl);
+        }
     }};
 
     // record!(logkit::LEVEL_TRACE, "I'm ready for adventure!");
     // {"msg":"I'm ready for adventure!"}
     ($lvl:expr, $fmt:literal) => {{
-        $crate::record!($lvl, $fmt, );
+        $crate::record!($lvl, $fmt, )
     }};
 
     // record!(logkit::LEVEL_TRACE, "Hi {}! It's been {} years since our last trip together.", "Alice", 2);
     // {"msg":"Hi Alice! It's been 2 years since our last trip together."}
     ($lvl:expr, $fmt:literal, $($arg:tt)*) => {{
-        if let Some(mut record) = $crate::Logger::new().record($lvl) {
-            record.append("msg", format!($fmt, $($arg)*));
+        let logger = $crate::Logger::def().read();
+        if logger.allow($lvl) {
+            logger.spawn($lvl).append("msg", format!($fmt, $($arg)*));
         }
     }};
 
     // record!(logkit::LEVEL_TRACE, name = "Alice", age = 20);
     // {"name":"Alice","age":20}
     ($lvl:expr, $($key:tt = $val:expr),*) => {{
-        if let Some(mut record) = $crate::Logger::new().record($lvl) {
+        let logger = $crate::Logger::def().read();
+        if logger.allow($lvl) {
+            let mut record = logger.spawn($lvl);
             $(record.append(stringify!($key), $val);)*
         }
     }};
@@ -73,7 +79,9 @@ macro_rules! record {
     // record!(logkit::LEVEL_TRACE, name = "Alice", age = 20; "Hi {}! I know, time flies. I've visited {} countries since then.", "Bob", 3);
     // {"name":"Alice","age":20,"msg":"Hi Bob! I know, time flies. I've visited 3 countries since then."}
     ($lvl:expr, $($key:tt = $val:expr),+; $fmt:literal, $($arg:tt)*) => {{
-        if let Some(mut record) = $crate::Logger::new().record($lvl) {
+        let logger = $crate::Logger::def().read();
+        if logger.allow($lvl) {
+            let mut record = logger.spawn($lvl);
             $(record.append(stringify!($key), $val);)*
             record.append("msg", format!($fmt, $($arg)*));
         }

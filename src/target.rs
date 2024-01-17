@@ -1,5 +1,5 @@
 //! mod target
-pub trait Target {}
+pub trait Target: Send + Sync {}
 
 pub struct ConsoleTarget;
 

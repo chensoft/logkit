@@ -1,4 +1,5 @@
 //! mod consts
+pub(crate) use parking_lot::RwLock;
 
 /// Level
 pub type Level = i32;
