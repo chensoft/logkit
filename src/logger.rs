@@ -14,10 +14,12 @@ pub struct Logger {
 
 lazy_static! {
     static ref DEF_LOGGER: RwLock<Logger> = RwLock::new({
-        // todo add level, time hook
-        // todo add stack for error
-        // todo add target
-        Logger::new()
+        let mut obj = Logger::new();
+        obj.mount(Box::new(LevelPlugin));
+        obj.mount(Box::new(TimePlugin));
+        obj.mount(Box::new(StackPlugin {level: LEVEL_ERROR}));
+        obj.route(Box::new(StdoutTarget));
+        obj
     });
 }
 
@@ -39,6 +41,16 @@ impl Logger {
         obj
     }
 
+    pub fn mount(&mut self, plugin: Box<dyn Plugin>) -> &mut Self {
+        self.plugins.push(plugin);
+        self
+    }
+
+    pub fn route(&mut self, target: Box<dyn Target>) -> &mut Self {
+        self.targets.push(target);
+        self
+    }
+
     #[inline]
     pub fn allow(&self, level: Level) -> bool {
         level >= self.level
@@ -46,15 +58,13 @@ impl Logger {
 
     #[inline]
     pub fn spawn(&self, level: Level) -> Record {
-        // todo &mut Record to plugin
         Record::new(level, self.alloc)
     }
 
-    pub fn mount(&mut self, plugin: Box<dyn Plugin>) {
-        self.plugins.push(plugin);
-    }
-    
-    pub fn route(&mut self, target: Box<dyn Target>) {
-        self.targets.push(target);
+    #[inline]
+    pub fn write(&self, mut record: Record) { // todo reuse record
+        for target in &self.targets {
+            record.flush(target.as_ref());
+        }
     }
 }

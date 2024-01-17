@@ -1,4 +1,5 @@
 //! mod consts
+pub(crate) use std::io::Write;
 pub(crate) use parking_lot::RwLock;
 
 /// Level
@@ -30,28 +31,5 @@ pub fn str_to_level(level: &str) -> Level {
         "warn" => LEVEL_WARN,
         "error" => LEVEL_ERROR,
         _ => LEVEL_OFF,
-    }
-}
-
-/// todo rename Appender
-pub trait Appender {
-    fn append(&self, buffer: &mut String);
-}
-
-impl Appender for &str {
-    fn append(&self, buffer: &mut String) {
-        buffer.push_str(self);
-    }
-}
-
-impl Appender for String {
-    fn append(&self, buffer: &mut String) {
-        buffer.push_str(&self);
-    }
-}
-
-impl Appender for i32 {
-    fn append(&self, buffer: &mut String) {
-        buffer.push_str(&self.to_string());
     }
 }

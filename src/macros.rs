@@ -41,7 +41,7 @@ macro_rules! record {
     ($lvl:expr) => {{
         let logger = $crate::Logger::def().read();
         if logger.allow($lvl) {
-            logger.spawn($lvl);
+            logger.write(logger.spawn($lvl));
         }
     }};
 
@@ -56,7 +56,9 @@ macro_rules! record {
     ($lvl:expr, $fmt:literal, $($arg:tt)*) => {{
         let logger = $crate::Logger::def().read();
         if logger.allow($lvl) {
-            logger.spawn($lvl).append("msg", format!($fmt, $($arg)*));
+            let mut record = logger.spawn($lvl);
+            record.append("msg", format!($fmt, $($arg)*));
+            logger.write(record);
         }
     }};
 
@@ -67,6 +69,7 @@ macro_rules! record {
         if logger.allow($lvl) {
             let mut record = logger.spawn($lvl);
             $(record.append(stringify!($key), $val);)*
+            logger.write(record);
         }
     }};
 
@@ -84,6 +87,7 @@ macro_rules! record {
             let mut record = logger.spawn($lvl);
             $(record.append(stringify!($key), $val);)*
             record.append("msg", format!($fmt, $($arg)*));
+            logger.write(record);
         }
     }};
 }
