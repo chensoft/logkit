@@ -60,11 +60,11 @@ impl Logger {
             return None;
         }
 
-        let mut record = Record::new(level, self.alloc);
+        let mut record = Record::get(level, self.alloc);
 
         for plugin in &self.plugins {
             if !plugin.pre(&mut record) {
-                self.reuse(record);
+                Record::put(record);
                 return None;
             }
         }
@@ -75,7 +75,7 @@ impl Logger {
     pub fn write(&self, mut record: Record) {
         for plugin in &self.plugins {
             if !plugin.post(&mut record) {
-                return self.reuse(record);
+                return Record::put(record);
             }
         }
 
@@ -85,11 +85,6 @@ impl Logger {
             target.write(record.buffer());
         }
 
-        self.reuse(record);
-    }
-
-    pub fn reuse(&self, mut record: Record) {
-        // todo reuse record
-        record.reset();
+        Record::put(record);
     }
 }

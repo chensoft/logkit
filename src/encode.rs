@@ -1,6 +1,6 @@
 //! mod encode
-pub trait Encode: Sync + Send { // todo should put in json library
-fn encode(&self, buf: &mut Vec<u8>);
+pub trait Encode: Sync + Send {
+    fn encode(&self, buf: &mut Vec<u8>); // todo should put in json library
 }
 
 macro_rules! impl_encode_integer {
@@ -26,7 +26,7 @@ impl_encode_integer!(u64);
 // todo impl_encode_integer!(u128);
 impl_encode_integer!(usize);
 
-impl Encode for f32 { // todo pretty?
+impl Encode for f32 {
     fn encode(&self, buf: &mut Vec<u8>) {
         buf.reserve(24);
         unsafe {
@@ -36,7 +36,7 @@ impl Encode for f32 { // todo pretty?
     }
 }
 
-impl Encode for f64 { // todo pretty?
+impl Encode for f64 {
     fn encode(&self, buf: &mut Vec<u8>) {
         buf.reserve(24);
         unsafe {
@@ -89,7 +89,7 @@ impl<T: Encode> Encode for Vec<T> {
 }
 
 #[test]
-fn test_simple() {
+fn test_encode() {
     fn assert(val: impl Encode, cmp: String) {
         let mut buf = vec![];
         val.encode(&mut buf);

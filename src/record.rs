@@ -8,14 +8,15 @@ pub struct Record {
 }
 
 impl Record {
-    pub fn new(level: Level, capacity: usize) -> Self {
+    pub fn get(level: Level, capacity: usize) -> Self {
         let mut obj = Record {level, cache: Vec::with_capacity(capacity)};
         obj.cache.push(b'{');
         obj
     }
 
-    pub fn reset(&mut self) {
-        self.cache.truncate(1);
+    pub fn put(mut record: Record) {
+        // todo reuse record
+        record.cache.truncate(1);
     }
 
     pub fn level(&self) -> Level {
