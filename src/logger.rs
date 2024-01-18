@@ -16,7 +16,7 @@ lazy_static! {
     static ref DEF_LOGGER: RwLock<Logger> = RwLock::new({
         let mut obj = Logger::new();
         obj.mount(Box::new(LevelPlugin));
-        obj.mount(Box::new(TimePlugin));
+        obj.mount(Box::new(TimePlugin::from_millis()));
         obj.mount(Box::new(StackPlugin {level: LEVEL_ERROR}));
         obj.route(Box::new(StdoutTarget));
         obj
@@ -58,13 +58,25 @@ impl Logger {
 
     #[inline]
     pub fn spawn(&self, level: Level) -> Record {
-        Record::new(level, self.alloc)
+        let mut record = Record::new(level, self.alloc);
+
+        for plugin in &self.plugins {
+            plugin.pre(&mut record); // todo stop if call discard
+        }
+
+        record
     }
 
     #[inline]
     pub fn write(&self, mut record: Record) { // todo reuse record
+        for plugin in &self.plugins {
+            plugin.post(&mut record); // todo stop if call discard
+        }
+
+        record.finish();
+
         for target in &self.targets {
-            record.flush(target.as_ref());
+            target.write(record.buffer());
         }
     }
 }

@@ -72,6 +72,22 @@ impl Encode for String {
     }
 }
 
+impl<T: Encode> Encode for Vec<T> {
+    fn encode(&self, buf: &mut Vec<u8>) {
+        buf.push(b'[');
+
+        for item in self {
+            item.encode(buf);
+            buf.push(b',');
+        }
+
+        match buf.last_mut() {
+            Some(val) if *val == b',' => *val = b']',
+            _ => buf.push(b']'),
+        }
+    }
+}
+
 #[test]
 fn test_simple() {
     fn assert(val: impl Encode, cmp: String) {

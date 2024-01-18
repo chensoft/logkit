@@ -1,7 +1,6 @@
 //! mod record
 use super::define::*;
 use super::encode::*;
-use super::target::*;
 
 pub struct Record {
     level: Level,
@@ -30,14 +29,23 @@ impl Record {
     }
 
     #[inline]
-    pub fn flush(&mut self, dest: &(impl Target + ?Sized)) {
+    pub fn finish(&mut self) {
         match self.cache.last_mut() {
             Some(val) if *val == b',' => *val = b'}',
             _ => self.cache.push(b'}'),
         }
 
         self.cache.push(b'\n');
-        dest.write(&self.cache);
+    }
+
+    #[inline]
+    pub fn buffer(&self) -> &Vec<u8> {
+        &self.cache
+    }
+
+    #[inline]
+    pub fn todo(&mut self) -> &mut Self {
         self.cache.truncate(1);
+        self
     }
 }

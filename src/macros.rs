@@ -55,45 +55,55 @@ macro_rules! record {
     // {"msg":"Hi Alice! It's been 2 years since our last trip together."}
     ($lvl:expr, $fmt:literal, $($arg:tt)*) => {{
         let logger = $crate::Logger::def().read();
-        if logger.allow($lvl) {
-            let mut record = logger.spawn($lvl);
-            record.append("msg", format!($fmt, $($arg)*));
-            logger.write(record);
+        if !logger.allow($lvl) {
+            return;
         }
+
+        let mut record = logger.spawn($lvl);
+        record.append("msg", format!($fmt, $($arg)*));
+
+        logger.write(record);
     }};
 
     // record!(logkit::LEVEL_TRACE, name = "Alice", age = 20);
     // {"name":"Alice","age":20}
     ($lvl:expr, $($key:tt = $val:expr),*) => {{
         let logger = $crate::Logger::def().read();
-        if logger.allow($lvl) {
-            let mut record = logger.spawn($lvl);
-            $(record.append(stringify!($key), $val);)*
-            logger.write(record);
+        if !logger.allow($lvl) {
+            return;
         }
+
+        let mut record = logger.spawn($lvl);
+        $(record.append(stringify!($key), $val);)*
+
+        logger.write(record);
     }};
 
     // record!(logkit::LEVEL_TRACE, name = "Alice", age = 20; "I'm ready for adventure!");
-    // {"name":"Alice","age":20,"msg":"I'm ready for adventure!"}
+    // {"msg":"I'm ready for adventure!","name":"Alice","age":20}
     ($lvl:expr, $($key:tt = $val:expr),+; $fmt:literal) => {{
         $crate::record!($lvl, $($key = $val),+; $fmt, )
     }};
 
     // record!(logkit::LEVEL_TRACE, name = "Alice", age = 20; "Hi {}! I know, time flies. I've visited {} countries since then.", "Bob", 3);
-    // {"name":"Alice","age":20,"msg":"Hi Bob! I know, time flies. I've visited 3 countries since then."}
+    // {"msg":"Hi Bob! I know, time flies. I've visited 3 countries since then.","name":"Alice","age":20}
     ($lvl:expr, $($key:tt = $val:expr),+; $fmt:literal, $($arg:tt)*) => {{
         let logger = $crate::Logger::def().read();
-        if logger.allow($lvl) {
-            let mut record = logger.spawn($lvl);
-            $(record.append(stringify!($key), $val);)*
-            record.append("msg", format!($fmt, $($arg)*));
-            logger.write(record);
+        if !logger.allow($lvl) {
+            return;
         }
+
+        let mut record = logger.spawn($lvl);
+        record.append("msg", format!($fmt, $($arg)*));
+        $(record.append(stringify!($key), $val);)*
+
+        logger.write(record);
     }};
 }
 
 #[test]
 fn test() {
+    // todo
     use crate as logkit;
 
     record!(logkit::LEVEL_TRACE);
