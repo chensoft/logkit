@@ -51,26 +51,32 @@ impl Logger {
         self
     }
 
-    #[inline]
     pub fn allow(&self, level: Level) -> bool {
         level >= self.level
     }
 
-    #[inline]
-    pub fn spawn(&self, level: Level) -> Record {
+    pub fn spawn(&self, level: Level) -> Option<Record> {
+        if !self.allow(level) {
+            return None;
+        }
+
         let mut record = Record::new(level, self.alloc);
 
         for plugin in &self.plugins {
-            plugin.pre(&mut record); // todo stop if call discard
+            if !plugin.pre(&mut record) {
+                self.reuse(record);
+                return None;
+            }
         }
 
-        record
+        Some(record)
     }
 
-    #[inline]
-    pub fn write(&self, mut record: Record) { // todo reuse record
+    pub fn write(&self, mut record: Record) {
         for plugin in &self.plugins {
-            plugin.post(&mut record); // todo stop if call discard
+            if !plugin.post(&mut record) {
+                return self.reuse(record);
+            }
         }
 
         record.finish();
@@ -78,5 +84,12 @@ impl Logger {
         for target in &self.targets {
             target.write(record.buffer());
         }
+
+        self.reuse(record);
+    }
+
+    pub fn reuse(&self, mut record: Record) {
+        // todo reuse record
+        record.reset();
     }
 }

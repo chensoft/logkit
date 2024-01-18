@@ -14,12 +14,14 @@ impl Record {
         obj
     }
 
-    #[inline]
+    pub fn reset(&mut self) {
+        self.cache.truncate(1);
+    }
+
     pub fn level(&self) -> Level {
         self.level
     }
 
-    #[inline]
     pub fn append(&mut self, key: &str, val: impl Encode) -> &mut Self {
         key.encode(&mut self.cache);
         self.cache.push(b':');
@@ -28,7 +30,6 @@ impl Record {
         self
     }
 
-    #[inline]
     pub fn finish(&mut self) {
         match self.cache.last_mut() {
             Some(val) if *val == b',' => *val = b'}',
@@ -38,14 +39,7 @@ impl Record {
         self.cache.push(b'\n');
     }
 
-    #[inline]
     pub fn buffer(&self) -> &Vec<u8> {
         &self.cache
-    }
-
-    #[inline]
-    pub fn todo(&mut self) -> &mut Self {
-        self.cache.truncate(1);
-        self
     }
 }

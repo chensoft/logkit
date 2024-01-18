@@ -3,22 +3,26 @@ use super::define::*;
 use super::encode::*;
 use super::record::*;
 
+#[allow(unused_variables)]
 pub trait Plugin: Sync + Send {
-    fn pre(&self, record: &mut Record);
+    #[must_use]
+    fn pre(&self, record: &mut Record) -> bool {
+        true
+    }
 
-    fn post(&self, record: &mut Record);
+    #[must_use]
+    fn post(&self, record: &mut Record) -> bool {
+        true
+    }
 }
 
 pub struct LevelPlugin;
 
 impl Plugin for LevelPlugin {
-    #[inline]
-    fn pre(&self, record: &mut Record) {
+    fn pre(&self, record: &mut Record) -> bool {
         record.append("level", level_to_str(record.level()));
+        true
     }
-
-    #[inline]
-    fn post(&self, _record: &mut Record) {}
 }
 
 pub struct TimePlugin {
@@ -48,14 +52,11 @@ impl TimePlugin {
 }
 
 impl Plugin for TimePlugin {
-    #[inline]
-    fn pre(&self, record: &mut Record) {
+    fn pre(&self, record: &mut Record) -> bool {
         let now = chrono::Local::now();
         record.append("time", now.to_rfc3339_opts(self.format, false)); // todo make faster
+        true
     }
-
-    #[inline]
-    fn post(&self, _record: &mut Record) {}
 }
 
 #[derive(Debug, Default, Clone)]
@@ -92,13 +93,9 @@ pub struct StackPlugin {
 }
 
 impl Plugin for StackPlugin {
-    #[inline]
-    fn pre(&self, _record: &mut Record) {}
-
-    #[inline]
-    fn post(&self, record: &mut Record) {
+    fn post(&self, record: &mut Record) -> bool {
         if record.level() != self.level || std::env::var("RUST_BACKTRACE").unwrap_or("0".to_string()) == "0" {
-            return;
+            return true;
         }
 
         let mut frames = vec![];
@@ -124,5 +121,7 @@ impl Plugin for StackPlugin {
         });
 
         record.append("stack", frames);
+
+        true
     }
 }
