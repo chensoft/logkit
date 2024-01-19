@@ -2,6 +2,9 @@
 pub(crate) use std::io::Write;
 pub(crate) use parking_lot::RwLock;
 
+/// Trait
+pub use encoder::Encode;
+
 /// Level
 pub type Level = i32;
 

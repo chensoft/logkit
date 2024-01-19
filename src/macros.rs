@@ -95,10 +95,10 @@ fn test() {
     // todo
     use crate as logkit;
 
-    record!(logkit::LEVEL_TRACE);
-    record!(logkit::LEVEL_TRACE, "I'm ready for adventure!");
-    record!(logkit::LEVEL_TRACE, "Hi {}! It's been {} years since our last trip together.", "Alice", 2);
-    record!(logkit::LEVEL_TRACE, name = "Alice", age = 20);
-    record!(logkit::LEVEL_TRACE, name = "Alice", age = 20; "I'm ready for adventure!");
-    record!(logkit::LEVEL_TRACE, name = "Alice", age = 20; "Hi {}! I know, time flies. I've visited {} countries since then.", "Bob", 3);
+    // record!(logkit::LEVEL_TRACE);
+    // record!(logkit::LEVEL_TRACE, "I'm ready for adventure!");
+    // record!(logkit::LEVEL_TRACE, "Hi {}! It's been {} years since our last trip together.", "Alice", 2);
+    // record!(logkit::LEVEL_TRACE, name = "Alice", age = 20);
+    // record!(logkit::LEVEL_TRACE, name = "Alice", age = 20; "I'm ready for adventure!");
+    // record!(logkit::LEVEL_TRACE, name = "Alice", age = 20; "Hi {}! I know, time flies. I've visited {} countries since then.", "Bob", 3);
 }

@@ -1,6 +1,5 @@
 //! mod record
 use super::define::*;
-use super::encode::*;
 
 pub struct Record {
     level: Level,
@@ -24,7 +23,8 @@ impl Record {
     }
 
     pub fn append(&mut self, key: &str, val: impl Encode) -> &mut Self {
-        key.encode(&mut self.cache);
+        // todo
+        // key.encode(&mut self.cache);
         self.cache.push(b':');
         val.encode(&mut self.cache);
         self.cache.push(b',');
