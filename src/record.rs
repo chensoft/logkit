@@ -23,8 +23,7 @@ impl Record {
     }
 
     pub fn append(&mut self, key: &str, val: impl Encode) -> &mut Self {
-        // todo
-        // key.encode(&mut self.cache);
+        key.encode(&mut self.cache);
         self.cache.push(b':');
         val.encode(&mut self.cache);
         self.cache.push(b',');

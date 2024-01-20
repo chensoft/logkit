@@ -5,8 +5,6 @@ pub trait Target: Sync + Send {
     fn write(&self, buf: &[u8]);
 }
 
-// todo stringtarget
-
 pub struct StdoutTarget;
 
 impl Target for StdoutTarget {

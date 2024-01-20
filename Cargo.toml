@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Jian Chen <admin@chensoft.com>"]
 license = "MIT"
-description = "Super fast, structured, scaleable logging library for Rust"
+description = "Super fast, structured, scalable logging library for Rust"
 documentation = "https://docs.rs/logkit"
 repository = "https://github.com/chensoft/logkit"
 readme = "README.md"
@@ -12,7 +12,7 @@ keywords = ["logkit", "log", "logger", "logging"]
 
 [dependencies]
 chrono = "=0.4.31"
-encoder = "=0.1.0"
+encoder = "=0.2.0"
 backtrace = "=0.3.69"
 lazy_static = "=1.4.0"
 parking_lot = "=0.12.1"

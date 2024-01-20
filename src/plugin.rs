@@ -19,8 +19,7 @@ pub struct LevelPlugin;
 
 impl Plugin for LevelPlugin {
     fn pre(&self, record: &mut Record) -> bool {
-        // todo
-        // record.append("level", level_to_str(record.level()));
+        record.append("level", level_to_str(record.level()));
         true
     }
 }
@@ -53,9 +52,8 @@ impl TimePlugin {
 
 impl Plugin for TimePlugin {
     fn pre(&self, record: &mut Record) -> bool {
-        // todo
-        // let now = chrono::Local::now();
-        // record.append("time", now.to_rfc3339_opts(self.format, false)); // todo make faster
+        let now = chrono::Local::now();
+        record.append("time", now.to_rfc3339_opts(self.format, false)); // todo make faster
         true
     }
 }
@@ -71,20 +69,19 @@ impl Encode for StackFrame {
     fn encode(&self, buf: &mut Vec<u8>) {
         buf.push(b'{');
 
-        // todo
-        // "funcname".encode(buf);
-        // buf.push(b':');
-        // self.funcname.encode(buf);
-        // buf.push(b',');
-        //
-        // "filename".encode(buf);
-        // buf.push(b':');
-        // self.filename.encode(buf);
-        // buf.push(b',');
-        //
-        // "lineno".encode(buf);
-        // buf.push(b':');
-        // self.lineno.encode(buf);
+        "funcname".encode(buf);
+        buf.push(b':');
+        self.funcname.encode(buf);
+        buf.push(b',');
+
+        "filename".encode(buf);
+        buf.push(b':');
+        self.filename.encode(buf);
+        buf.push(b',');
+
+        "lineno".encode(buf);
+        buf.push(b':');
+        self.lineno.encode(buf);
 
         buf.push(b'}');
     }
@@ -122,8 +119,7 @@ impl Plugin for StackPlugin {
             true
         });
 
-        // todo
-        // record.append("stack", frames);
+        record.append("stack", frames);
 
         true
     }
