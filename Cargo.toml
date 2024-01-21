@@ -11,7 +11,6 @@ readme = "README.md"
 keywords = ["logkit", "log", "logger", "logging"]
 
 [dependencies]
-opool = "=0.1.1"
 chrono = "=0.4.31"
 encoder = "=0.2.1"
 backtrace = "=0.3.69"

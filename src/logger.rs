@@ -12,6 +12,7 @@ pub struct Logger {
     targets: Vec<Box<dyn Target>>, // output targets
 }
 
+// todo use Allocator to new record
 impl Logger {
     pub fn new() -> Self {
         let mut obj = Self {level: LEVEL_TRACE, alloc: 512, plugins: vec![], targets: vec![]};
@@ -40,13 +41,12 @@ impl Logger {
         level >= self.level
     }
 
-    pub fn spawn(&self, level: Level) -> Option<RecordWrapper> {
+    pub fn spawn(&self, level: Level) -> Option<Record> {
         if !self.allow(level) {
             return None;
         }
 
-        let mut record = RECORD_POOL.get();
-        record.reset(level, self.alloc);
+        let mut record = Record::new(level, self.alloc);
 
         for plugin in &self.plugins {
             if !plugin.pre(&mut record) {
@@ -57,7 +57,7 @@ impl Logger {
         Some(record)
     }
 
-    pub fn write(&self, mut record: RecordWrapper) {
+    pub fn write(&self, mut record: Record) {
         for plugin in &self.plugins {
             if !plugin.post(&mut record) {
                 return;

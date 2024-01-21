@@ -1,9 +1,6 @@
 //! mod consts
 pub(crate) use std::io::Write;
 pub(crate) use std::cell::RefCell;
-pub(crate) use opool::Pool;
-pub(crate) use opool::RefGuard;
-pub(crate) use opool::PoolAllocator;
 pub(crate) use parking_lot::RwLock;
 pub(crate) use parking_lot::ReentrantMutex;
 

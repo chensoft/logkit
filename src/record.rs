@@ -7,14 +7,14 @@ pub struct Record {
 }
 
 impl Record {
-    pub fn level(&self) -> Level {
-        self.level
+    pub fn new(level: Level, capacity: usize) -> Self {
+        let mut obj = Self {level, cache: Vec::with_capacity(capacity)};
+        obj.cache.push(b'{');
+        obj
     }
 
-    pub fn reset(&mut self, level: Level, capacity: usize) {
-        self.level = level;
-        self.cache.reserve(std::cmp::max(0, capacity - self.cache.capacity()));
-        self.cache.truncate(1);
+    pub fn level(&self) -> Level {
+        self.level
     }
 
     pub fn append(&mut self, key: &str, val: impl Encode) -> &mut Self {
@@ -37,29 +37,4 @@ impl Record {
     pub fn buffer(&self) -> &Vec<u8> {
         &self.cache
     }
-}
-
-pub type RecordWrapper<'a> = RefGuard<'a, RecordAllocator, Record>;
-
-pub struct RecordAllocator;
-
-impl PoolAllocator<Record> for RecordAllocator {
-    #[inline]
-    fn reset(&self, _obj: &mut Record) {}
-
-    #[inline]
-    fn allocate(&self) -> Record {
-        let mut obj = Record {level: LEVEL_OFF, cache: vec![]};
-        obj.cache.push(b'{');
-        obj
-    }
-
-    #[inline]
-    fn is_valid(&self, _obj: &Record) -> bool {
-        true
-    }
-}
-
-lazy_static! {
-    pub static ref RECORD_POOL: Pool<RecordAllocator, Record> = Pool::new(128, RecordAllocator);
 }

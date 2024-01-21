@@ -24,5 +24,6 @@
 - extremely optimized for encoding to accelerate the logging speed
 - plugins can terminate the logging process prematurely
 - error logging with optional stacktrace
-- easy-to-use default logging object
+- easy-to-use default logger object
+- user can replace default logger
 - predictable field output order
