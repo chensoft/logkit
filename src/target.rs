@@ -21,10 +21,19 @@ impl Target for StderrTarget {
     }
 }
 
-pub struct FileTarget {}
+pub struct FileTarget {
+    pub file: ReentrantMutex<RefCell<std::fs::File>>,
+}
+
+impl FileTarget {
+    pub fn new(path: &str) -> anyhow::Result<Self> {
+        Ok(Self {file: ReentrantMutex::new(RefCell::new(std::fs::OpenOptions::new().create(true).append(true).open(path)?))})
+    }
+}
 
 impl Target for FileTarget {
-    fn write(&self, _buf: &[u8]) {
-        todo!()
+    fn write(&self, buf: &[u8]) {
+        let file = self.file.lock();
+        let _ = file.borrow_mut().write_all(buf);
     }
 }

@@ -1,9 +1,11 @@
 //! mod consts
 pub(crate) use std::io::Write;
+pub(crate) use std::cell::RefCell;
 pub(crate) use parking_lot::RwLock;
+pub(crate) use parking_lot::ReentrantMutex;
 
 /// Trait
-pub use encoder::json::Encode;
+pub use encoder::json::Encode; // todo different encode
 
 /// Level
 pub type Level = i32;
