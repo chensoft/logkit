@@ -9,6 +9,7 @@ mod target;
 
 pub use define::*;
 pub use logger::*;
+pub use macros::*;
 pub use plugin::*;
 pub use record::*;
 pub use target::*;

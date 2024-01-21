@@ -12,22 +12,7 @@ pub struct Logger {
     targets: Vec<Box<dyn Target>>, // output targets
 }
 
-lazy_static! {
-    static ref DEF_LOGGER: RwLock<Logger> = RwLock::new({
-        let mut obj = Logger::new();
-        obj.mount(Box::new(LevelPlugin));
-        obj.mount(Box::new(TimePlugin::from_millis()));
-        obj.mount(Box::new(StackPlugin {level: LEVEL_ERROR}));
-        obj.route(Box::new(StdoutTarget));
-        obj
-    });
-}
-
 impl Logger {
-    pub fn def() -> &'static RwLock<Logger> {
-        &DEF_LOGGER
-    }
-
     pub fn new() -> Self {
         let mut obj = Self {level: LEVEL_TRACE, alloc: 512, plugins: vec![], targets: vec![]};
 
