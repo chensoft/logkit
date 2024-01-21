@@ -4,11 +4,13 @@ use super::record::*;
 
 #[allow(unused_variables)]
 pub trait Plugin: Sync + Send {
+    #[inline]
     #[must_use]
     fn pre(&self, record: &mut Record) -> bool {
         true
     }
 
+    #[inline]
     #[must_use]
     fn post(&self, record: &mut Record) -> bool {
         true
@@ -18,6 +20,7 @@ pub trait Plugin: Sync + Send {
 pub struct LevelPlugin;
 
 impl Plugin for LevelPlugin {
+    #[inline]
     fn pre(&self, record: &mut Record) -> bool {
         record.append("level", level_to_str(record.level()));
         true
@@ -51,9 +54,10 @@ impl TimePlugin {
 }
 
 impl Plugin for TimePlugin {
+    #[inline]
     fn pre(&self, record: &mut Record) -> bool {
         let now = chrono::Local::now();
-        record.append("time", now.to_rfc3339_opts(self.format, false)); // todo make faster
+        record.append("time", now.to_rfc3339_opts(self.format, false));
         true
     }
 }
@@ -66,6 +70,7 @@ pub struct StackFrame {
 }
 
 impl Encode for StackFrame {
+    #[inline]
     fn encode(&self, buf: &mut Vec<u8>) {
         buf.push(b'{');
 

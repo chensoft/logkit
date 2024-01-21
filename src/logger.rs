@@ -37,10 +37,12 @@ impl Logger {
         self
     }
 
+    #[inline]
     pub fn allow(&self, level: Level) -> bool {
         level >= self.level
     }
 
+    #[inline]
     pub fn spawn(&self, level: Level) -> Option<Record> {
         if !self.allow(level) {
             return None;
@@ -65,7 +67,8 @@ impl Logger {
         Some(record)
     }
 
-    pub fn write(&self, mut record: Record) {
+    #[inline]
+    pub fn flush(&self, mut record: Record) {
         for plugin in &self.plugins {
             if !plugin.post(&mut record) {
                 self.reuse(record);
@@ -82,9 +85,12 @@ impl Logger {
         self.reuse(record);
     }
 
+    #[inline]
     pub fn reuse(&self, record: Record) {
-        let guard = self.records.lock();
-        let mut array = guard.borrow_mut();
-        array.push(record);
+        {
+            let guard = self.records.lock();
+            let mut array = guard.borrow_mut();
+            array.push(record);
+        }
     }
 }

@@ -7,21 +7,25 @@ pub struct Record {
 }
 
 impl Record {
+    #[inline]
     pub fn new(level: Level, capacity: usize) -> Self {
         let mut obj = Self {level, cache: Vec::with_capacity(capacity)};
         obj.cache.push(b'{');
         obj
     }
 
+    #[inline]
     pub fn get(mut record: Record) -> Self {
         record.cache.truncate(1);
         record
     }
 
+    #[inline]
     pub fn level(&self) -> Level {
         self.level
     }
 
+    #[inline]
     pub fn append(&mut self, key: &str, val: impl Encode) -> &mut Self {
         key.encode(&mut self.cache);
         self.cache.push(b':');
@@ -30,6 +34,7 @@ impl Record {
         self
     }
 
+    #[inline]
     pub fn finish(&mut self) {
         match self.cache.last_mut() {
             Some(val) if *val == b',' => *val = b'}',
@@ -39,6 +44,7 @@ impl Record {
         self.cache.push(b'\n');
     }
 
+    #[inline]
     pub fn buffer(&self) -> &Vec<u8> {
         &self.cache
     }

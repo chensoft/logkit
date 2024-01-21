@@ -62,9 +62,10 @@ macro_rules! error {
 macro_rules! record {
     // record!(logkit::LEVEL_TRACE);
     // {}
-    ($lvl:expr) => {{
-        if let Some(record) = $crate::default_logger().read().spawn($lvl) {
-            $crate::default_logger().read().write(record);
+    ($lvl:expr $(,)?) => {{
+        let logger = $crate::default_logger().read();
+        if let Some(record) = logger.spawn($lvl) {
+            logger.flush(record);
         }
     }};
 
@@ -77,18 +78,20 @@ macro_rules! record {
     // record!(logkit::LEVEL_TRACE, "Hi {}! It's been {} years since our last trip together.", "Alice", 2);
     // {"msg":"Hi Alice! It's been 2 years since our last trip together."}
     ($lvl:expr, $fmt:literal, $($arg:tt)*) => {{
-        if let Some(mut record) = $crate::default_logger().read().spawn($lvl) {
+        let logger = $crate::default_logger().read();
+        if let Some(mut record) = logger.spawn($lvl) {
             record.append("msg", format!($fmt, $($arg)*));
-            $crate::default_logger().read().write(record);
+            logger.flush(record);
         }
     }};
 
     // record!(logkit::LEVEL_TRACE, name = "Alice", age = 20);
     // {"name":"Alice","age":20}
     ($lvl:expr, $($key:tt = $val:expr),*) => {{
-        if let Some(mut record) = $crate::default_logger().read().spawn($lvl) {
+        let logger = $crate::default_logger().read();
+        if let Some(mut record) = logger.spawn($lvl) {
             $(record.append(stringify!($key), $val);)*
-            $crate::default_logger().read().write(record);
+            logger.flush(record);
         }
     }};
 
@@ -101,11 +104,12 @@ macro_rules! record {
     // record!(logkit::LEVEL_TRACE, name = "Alice", age = 20; "Hi {}! I know, time flies. I've visited {} countries since then.", "Bob", 3);
     // {"msg":"Hi Bob! I know, time flies. I've visited 3 countries since then.","name":"Alice","age":20}
     ($lvl:expr, $($key:tt = $val:expr),+; $fmt:literal, $($arg:tt)*) => {{
-        if let Some(mut record) = $crate::default_logger().read().spawn($lvl) {
+        let logger = $crate::default_logger().read();
+        if let Some(mut record) = logger.spawn($lvl) {
             record.append("msg", format!($fmt, $($arg)*));
             $(record.append(stringify!($key), $val);)*
 
-            $crate::default_logger().read().write(record);
+            logger.flush(record);
         }
     }};
 }
