@@ -40,16 +40,16 @@ impl Logger {
         level >= self.level
     }
 
-    pub fn spawn(&self, level: Level) -> Option<Record> {
+    pub fn spawn(&self, level: Level) -> Option<RecordWrapper> {
         if !self.allow(level) {
             return None;
         }
 
-        let mut record = Record::get(level, self.alloc);
+        let mut record = RECORD_POOL.get();
+        record.reset(level, self.alloc);
 
         for plugin in &self.plugins {
             if !plugin.pre(&mut record) {
-                Record::put(record);
                 return None;
             }
         }
@@ -57,10 +57,10 @@ impl Logger {
         Some(record)
     }
 
-    pub fn write(&self, mut record: Record) {
+    pub fn write(&self, mut record: RecordWrapper) {
         for plugin in &self.plugins {
             if !plugin.post(&mut record) {
-                return Record::put(record);
+                return;
             }
         }
 
@@ -69,7 +69,5 @@ impl Logger {
         for target in &self.targets {
             target.write(record.buffer());
         }
-
-        Record::put(record);
     }
 }
