@@ -13,6 +13,11 @@ impl Record {
         obj
     }
 
+    pub fn get(mut record: Record) -> Self {
+        record.cache.truncate(1);
+        record
+    }
+
     pub fn level(&self) -> Level {
         self.level
     }
