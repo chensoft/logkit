@@ -9,13 +9,19 @@ pub struct Logger {
     pub alloc: usize, // record init capacity
 
     records: ReentrantMutex<RefCell<Vec<Record>>>, // records pool
-    plugins: Vec<Box<dyn Plugin>>, // middlewares // todo give name for quick access and remove, indexmap? to preserve order
-    targets: Vec<Box<dyn Target>>, // output targets
+    plugins: IndexMap<Cow<'static, str>, Box<dyn Plugin>>,    // middlewares
+    targets: IndexMap<Cow<'static, str>, Box<dyn Target>>,    // output targets
 }
 
 impl Logger {
     pub fn new() -> Self {
-        let mut obj = Self {level: LEVEL_TRACE, alloc: 512, records: ReentrantMutex::new(RefCell::new(vec![])), plugins: vec![], targets: vec![]};
+        let mut obj = Self {
+            level: LEVEL_TRACE,
+            alloc: 512,
+            records: ReentrantMutex::new(RefCell::new(vec![])),
+            plugins: IndexMap::new(),
+            targets: IndexMap::new()
+        };
 
         if let Ok(level) = std::env::var("RUST_LOG") {
             obj.level = match level.parse::<Level>() {
@@ -27,13 +33,23 @@ impl Logger {
         obj
     }
 
-    pub fn mount(&mut self, plugin: Box<dyn Plugin>) -> &mut Self {
-        self.plugins.push(plugin);
+    pub fn mount(&mut self, key: impl Into<Cow<'static, str>>, plugin: Box<dyn Plugin>) -> &mut Self {
+        self.plugins.insert(key.into(), plugin);
         self
     }
 
-    pub fn route(&mut self, target: Box<dyn Target>) -> &mut Self {
-        self.targets.push(target);
+    pub fn unmount(&mut self, key: &str) -> &mut Self {
+        self.plugins.remove(key);
+        self
+    }
+
+    pub fn route(&mut self, key: impl Into<Cow<'static, str>>, target: Box<dyn Target>) -> &mut Self {
+        self.targets.insert(key.into(), target);
+        self
+    }
+
+    pub fn unroute(&mut self, key: &str) -> &mut Self {
+        self.targets.remove(key);
         self
     }
 
@@ -59,8 +75,8 @@ impl Logger {
 
         record.reset(level, self.alloc);
 
-        for plugin in &self.plugins {
-            if !plugin.pre(&mut record) {
+        for (key, plugin) in &self.plugins {
+            if !plugin.pre(key, &mut record) {
                 self.reuse(record);
                 return None;
             }
@@ -71,8 +87,8 @@ impl Logger {
 
     #[inline]
     pub fn flush(&self, mut record: Record) {
-        for plugin in &self.plugins {
-            if !plugin.post(&mut record) {
+        for (key, plugin) in &self.plugins {
+            if !plugin.post(key, &mut record) {
                 self.reuse(record);
                 return;
             }
@@ -80,8 +96,8 @@ impl Logger {
 
         record.finish();
 
-        for target in &self.targets {
-            target.write(record.buffer());
+        for (key, target) in &self.targets {
+            target.write(key, record.buffer());
         }
 
         self.reuse(record);

@@ -14,6 +14,7 @@ keywords = ["logkit", "log", "logger", "logging"]
 anyhow = {version = "=1.0.79", features = ["backtrace"]}
 chrono = "=0.4.31"
 encoder = "=0.2.1"
+indexmap = "=2.1.0"
 backtrace = "=0.3.69"
 lazy_static = "=1.4.0"
 parking_lot = "=0.12.1"

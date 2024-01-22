@@ -7,10 +7,10 @@ use super::target::*;
 lazy_static! {
     static ref DEFAULT_LOGGER: RwLock<Logger> = RwLock::new({
         let mut obj = Logger::new();
-        obj.mount(Box::new(LevelPlugin));
-        obj.mount(Box::new(TimePlugin::from_millis()));
-        obj.mount(Box::new(StackPlugin {level: LEVEL_ERROR}));
-        obj.route(Box::new(StdoutTarget));
+        obj.mount("level", Box::new(LevelPlugin));
+        obj.mount("time", Box::new(TimePlugin::from_millis()));
+        obj.mount("stack", Box::new(StackPlugin {level: LEVEL_ERROR}));
+        obj.route("stdout", Box::new(StdoutTarget));
         obj
     });
 }

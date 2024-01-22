@@ -6,13 +6,13 @@ use super::record::*;
 pub trait Plugin: Sync + Send {
     #[inline]
     #[must_use]
-    fn pre(&self, record: &mut Record) -> bool {
+    fn pre(&self, key: &str, record: &mut Record) -> bool {
         true
     }
 
     #[inline]
     #[must_use]
-    fn post(&self, record: &mut Record) -> bool {
+    fn post(&self, key: &str, record: &mut Record) -> bool {
         true
     }
 }
@@ -21,8 +21,8 @@ pub struct LevelPlugin;
 
 impl Plugin for LevelPlugin {
     #[inline]
-    fn pre(&self, record: &mut Record) -> bool {
-        record.append("level", level_to_str(record.level()));
+    fn pre(&self, key: &str, record: &mut Record) -> bool {
+        record.append(key, level_to_str(record.level()));
         true
     }
 }
@@ -55,9 +55,9 @@ impl TimePlugin {
 
 impl Plugin for TimePlugin {
     #[inline]
-    fn pre(&self, record: &mut Record) -> bool {
+    fn pre(&self, key: &str, record: &mut Record) -> bool {
         let now = chrono::Local::now();
-        record.append("time", now.to_rfc3339_opts(self.format, false));
+        record.append(key, now.to_rfc3339_opts(self.format, false));
         true
     }
 }
@@ -97,7 +97,7 @@ pub struct StackPlugin {
 }
 
 impl Plugin for StackPlugin {
-    fn post(&self, record: &mut Record) -> bool {
+    fn post(&self, key: &str, record: &mut Record) -> bool {
         if record.level() != self.level || std::env::var("RUST_BACKTRACE").unwrap_or("0".to_string()) == "0" {
             return true;
         }
@@ -124,7 +124,7 @@ impl Plugin for StackPlugin {
             true
         });
 
-        record.append("stack", frames);
+        record.append(key, frames);
 
         true
     }
