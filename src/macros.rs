@@ -17,7 +17,7 @@ lazy_static! {
 
 pub fn default_logger() -> &'static RwLock<Logger> {
     &DEFAULT_LOGGER
-}
+} // todo use read, provide mut fn
 
 pub fn set_default_logger(logger: Logger) {
     *(DEFAULT_LOGGER.write()) = logger;

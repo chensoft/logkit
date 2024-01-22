@@ -30,6 +30,10 @@ fn main() {
 }
 ```
 
+## Documentation
+
+The documentation is [available here](https://docs.rs/logkit).
+
 ## License
 
 This software is released under the MIT License.

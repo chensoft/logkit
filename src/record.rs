@@ -1,6 +1,7 @@
 //! mod record
 use super::define::*;
 
+#[derive(Default, Debug, Clone)]
 pub struct Record {
     level: Level,
     cache: Vec<u8>,
@@ -8,16 +9,11 @@ pub struct Record {
 
 impl Record {
     #[inline]
-    pub fn new(level: Level, capacity: usize) -> Self {
-        let mut obj = Self {level, cache: Vec::with_capacity(capacity)};
-        obj.cache.push(b'{');
-        obj
-    }
-
-    #[inline]
-    pub fn get(mut record: Record) -> Self {
-        record.cache.truncate(1);
-        record
+    pub fn reset(&mut self, level: Level, capacity: usize) {
+        self.level = level;
+        self.cache.reserve(std::cmp::max(0, capacity - self.cache.len()));
+        self.cache.clear();
+        self.cache.push(b'{');
     }
 
     #[inline]

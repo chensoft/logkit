@@ -18,12 +18,12 @@
 
 ### Added
 
-- structured json encoded output
-- flexible plugin system allows for predefined output content
-- multiple targets can be combined for output to various locations
-- extremely optimized for encoding to accelerate the logging speed
-- plugins can terminate the logging process prematurely
-- error logging with optional stacktrace
-- easy-to-use default logger object
-- user can replace default logger
-- predictable field output order
+- JSON encoding output
+- flexible plugin system
+- multiple output targets
+- extremely fast encoding speed
+- predefined default logger
+- customizable logger object
+- logging with an optional stack trace
+- the output order of the fields is fixed
+- the plugin can cancel the output of a log entry midway

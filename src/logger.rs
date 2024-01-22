@@ -9,7 +9,7 @@ pub struct Logger {
     pub alloc: usize, // record init capacity
 
     records: ReentrantMutex<RefCell<Vec<Record>>>, // records pool
-    plugins: Vec<Box<dyn Plugin>>, // middlewares
+    plugins: Vec<Box<dyn Plugin>>, // middlewares // todo give name for quick access and remove, indexmap? to preserve order
     targets: Vec<Box<dyn Target>>, // output targets
 }
 
@@ -52,10 +52,12 @@ impl Logger {
             let guard = self.records.lock();
             let mut array = guard.borrow_mut();
             match array.pop() {
-                None => Record::new(level, self.alloc),
-                Some(val) => Record::get(val),
+                None => Record::default(),
+                Some(val) => val,
             }
         };
+
+        record.reset(level, self.alloc);
 
         for plugin in &self.plugins {
             if !plugin.pre(&mut record) {
