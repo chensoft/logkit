@@ -9,7 +9,7 @@ fn main() {
     error!("address already in use {}:{}", "127.0.0.1", 3000.0);
 
     // set default logger's log level
-    logkit::default_logger().write().level = logkit::LEVEL_WARN;
+    logkit::default_logger_mut().level = logkit::LEVEL_WARN;
 
     info!("you can't see this log record");
     warn!("only logs with a level of 'warn' or higher are visible");

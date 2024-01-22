@@ -3,6 +3,8 @@ pub(crate) use std::io::Write;
 pub(crate) use std::cell::RefCell;
 pub(crate) use parking_lot::RwLock;
 pub(crate) use parking_lot::ReentrantMutex;
+pub(crate) use parking_lot::RwLockReadGuard;
+pub(crate) use parking_lot::RwLockWriteGuard;
 
 /// Trait
 pub use encoder::json::Encode;
