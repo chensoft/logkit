@@ -2,6 +2,7 @@
 
 ### Todo
 
+- more friendly to get mut logger
 - limit level in compile time using features
 - async write support and thread local
 - log rotate by filesize, lineno, daily, hourly...

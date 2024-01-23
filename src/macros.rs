@@ -1,18 +1,9 @@
-//! Builtin default logger and handy macros
+//! Built-in default logger and handy macros
 use super::define::*;
 use super::logger::*;
-use super::plugin::*;
-use super::target::*;
 
 lazy_static! {
-    static ref DEFAULT_LOGGER: RwLock<Logger> = RwLock::new({
-        let mut obj = Logger::new();
-        obj.mount("level", Box::new(LevelPlugin));
-        obj.mount("time", Box::new(TimePlugin::from_millis()));
-        obj.mount("stack", Box::new(StackPlugin {level: LEVEL_ERROR}));
-        obj.route("stdout", Box::new(StdoutTarget));
-        obj
-    });
+    static ref DEFAULT_LOGGER: RwLock<Logger> = RwLock::new(Logger::def());
 }
 
 pub fn default_logger() -> RwLockReadGuard<'static, Logger> {

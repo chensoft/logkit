@@ -1,4 +1,4 @@
-//! Plugin trait and some builtin plugins
+//! Plugin trait and some built-in plugins
 use super::define::*;
 use super::record::*;
 

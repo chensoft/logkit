@@ -33,6 +33,15 @@ impl Logger {
         obj
     }
 
+    pub fn def() -> Self {
+        let mut obj = Logger::new();
+        obj.mount("level", Box::new(LevelPlugin));
+        obj.mount("time", Box::new(TimePlugin::from_millis()));
+        obj.mount("stack", Box::new(StackPlugin {level: LEVEL_ERROR}));
+        obj.route("stdout", Box::new(StdoutTarget));
+        obj
+    }
+
     pub fn mount(&mut self, key: impl Into<Cow<'static, str>>, plugin: Box<dyn Plugin>) -> &mut Self {
         self.plugins.insert(key.into(), plugin);
         self

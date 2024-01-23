@@ -6,7 +6,7 @@
 //!
 //! ## Basic Syntax
 //!
-//! This library supports the following builtin log formats, you can define custom macros if needed.
+//! This library supports the following built-in log formats, you can define custom macros if needed.
 //!
 //! ```
 //! #[macro_use] extern crate logkit;
@@ -30,13 +30,9 @@
 //! ```
 //! #[macro_use] extern crate logkit;
 //!
-//! let logger = logkit::default_logger();
+//! debug!("the current log level is {}", logkit::default_logger().level);
 //!
-//! debug!("the current log level is {}", logger.level);
-//!
-//! let mut logger = logkit::default_logger_mut();
-//! logger.level = logkit::LEVEL_INFO;
-//!
+//! logkit::default_logger_mut().level = logkit::LEVEL_INFO;
 //! debug!("debug logs are now hidden");
 //! info!("only logs with a level of 'info' or higher will be visible");
 //! ```
@@ -54,16 +50,16 @@
 //!
 //! // replace the default logger
 //! logkit::set_default_logger(logger);
-//! // or use it directly like builtin macros
+//! // or use it directly like built-in macros
 //! ```
 //!
 //! ## Custom Level
 //!
-//! There are five builtin logging levels: trace, debug, info, warn and error. You can define your
+//! There are five built-in logging levels: trace, debug, info, warn and error. You can define your
 //! own levels, as the type is simply an alias for i32, not an enum.
 //!
 //! ```
-//! pub const LEVEL_CUSTOM : logkit::Level = 10; // use any number distinct from the builtins
+//! pub const LEVEL_CUSTOM : logkit::Level = 10; // use any number distinct from the built-ins
 //!
 //! #[macro_export]
 //! macro_rules! custom {
