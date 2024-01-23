@@ -144,7 +144,7 @@
 //! info!("record will be output to both stdout and stderr now");
 //! ```
 //!
-//! **Happy Logging**
+//! **Happy Logging!**
 #[macro_use] extern crate lazy_static;
 
 pub mod define;
