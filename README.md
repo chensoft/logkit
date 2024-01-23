@@ -13,7 +13,7 @@ Super fast, structured, scalable logging library for Rust
 [crates-badge]: https://img.shields.io/crates/v/logkit.svg
 [crates-url]: https://crates.io/crates/logkit
 [license-badge]: https://img.shields.io/badge/license-MIT-blue.svg
-[license-url]: https://github.com/chensoft/logkit/blob/master/LICENSE
+[license-url]: https://github.com/chensoft/logkit?tab=MIT-1-ov-file
 [document-badge]: https://docs.rs/logkit/badge.svg
 [document-url]: https://docs.rs/logkit
 [linux-badge]: https://github.com/chensoft/logkit/actions/workflows/linux.yml/badge.svg
@@ -64,10 +64,24 @@ fn main() {
 }
 ```
 
+Output sample:
+
+```json
+{"level":"trace","time":"2024-01-23T14:25:18.625+08:00","msg":"hello, this is a trace log"}
+{"level":"debug","time":"2024-01-23T14:25:18.625+08:00","msg":"hello, this is a debug log"}
+{"level":"info","time":"2024-01-23T14:25:18.625+08:00","msg":"this is a log with two string fields","version":"0.1.0","commit":"3291cc60"}
+{"level":"warn","time":"2024-01-23T14:25:18.625+08:00","msg":"this is a log with a string and a numeric field","address":"127.0.0.1","port":3000}
+{"level":"error","time":"2024-01-23T14:25:18.625+08:00","msg":"this is a log with a 'println' style string 127.0.0.1:3000","stack":[{"funcname":"hello_world::main::h95297a3226de826e","filename":"logkit/examples/hello_world.rs","lineno":9}]}
+{"level":"info","time":"2024-01-23T14:25:18.676+08:00","msg":"only logs with a level equal to or higher than 'info' will be printed"}
+{"level":"error","time":"2024-01-23T14:25:18.676+08:00","msg":"you can see this error log with stack trace","stack":[{"funcname":"hello_world::main::h95297a3226de826e","filename":"logkit/examples/hello_world.rs","lineno":16}]}
+{"level":"error","time":"2024-01-23T14:25:18.677+08:00","msg":"stack trace printing feature has been disabled"}
+{"level":"info","time":"2024-01-23T14:25:18.677+08:00","msg":"you will see this log with a process id","pid":18208}
+```
+
 ## Documentation
 
 The documentation is [available here](https://docs.rs/logkit).
 
 ## License
 
-This software is released under the [MIT License](https://github.com/chensoft/logkit/blob/master/LICENSE).
+This software is released under the [MIT License](https://github.com/chensoft/logkit?tab=MIT-1-ov-file).

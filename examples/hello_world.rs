@@ -12,7 +12,7 @@ fn main() {
     logkit::default_logger_mut().level = logkit::LEVEL_INFO;
 
     debug!("you can't see this log because the level is below 'info'");
-    info!("only logs with a level equal to or higher than 'info' will be printed");
+    info!("only logs with a level equal to or higher than 'info' can be seen");
     error!("you can see this error log with stack trace");
 
     // remove logger's stack plugin

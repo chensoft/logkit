@@ -1,4 +1,4 @@
-//! mod target
+//! Target trait and builtin output targets
 use super::define::*;
 
 pub trait Target: Sync + Send {

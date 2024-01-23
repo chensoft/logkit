@@ -1,4 +1,4 @@
-//! mod logger
+//! The core logger struct to manage logging
 use super::define::*;
 use super::record::*;
 use super::plugin::*;

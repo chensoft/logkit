@@ -1,4 +1,4 @@
-//! mod target
+//! Plugin trait and some builtin plugins
 use super::define::*;
 use super::record::*;
 
@@ -22,7 +22,11 @@ pub struct LevelPlugin;
 impl Plugin for LevelPlugin {
     #[inline]
     fn pre(&self, record: &mut Record) -> bool {
-        record.append("level", level_to_str(record.level()));
+        match level_to_str(record.level()) {
+            None => record.append("level", record.level().to_string()),
+            Some(level) => record.append("level", level),
+        };
+
         true
     }
 }

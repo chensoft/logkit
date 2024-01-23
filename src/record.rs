@@ -1,4 +1,4 @@
-//! mod record
+//! Record represent a single log entry
 use super::define::*;
 
 #[derive(Default, Debug, Clone)]

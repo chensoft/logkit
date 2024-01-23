@@ -1,4 +1,4 @@
-//! mod consts
+//! Logging levels and Encode trait
 pub(crate) use std::io::Write;
 pub(crate) use std::borrow::Cow;
 pub(crate) use std::cell::RefCell;
@@ -21,14 +21,14 @@ pub const LEVEL_WARN  : Level = 3;
 pub const LEVEL_ERROR : Level = 4;
 pub const LEVEL_OFF   : Level = i32::MAX;
 
-pub fn level_to_str(level: Level) -> &'static str {
+pub fn level_to_str(level: Level) -> Option<&'static str> {
     match level {
-        LEVEL_TRACE => "trace",
-        LEVEL_DEBUG => "debug",
-        LEVEL_INFO => "info",
-        LEVEL_WARN => "warn",
-        LEVEL_ERROR => "error",
-        _ => "",
+        LEVEL_TRACE => Some("trace"),
+        LEVEL_DEBUG => Some("debug"),
+        LEVEL_INFO => Some("info"),
+        LEVEL_WARN => Some("warn"),
+        LEVEL_ERROR => Some("error"),
+        _ => None,
     }
 }
 

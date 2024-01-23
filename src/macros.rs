@@ -1,4 +1,4 @@
-//! mod macros
+//! Builtin default logger and handy macros
 use super::define::*;
 use super::logger::*;
 use super::plugin::*;
