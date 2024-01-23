@@ -75,8 +75,8 @@ impl Logger {
 
         record.reset(level, self.alloc);
 
-        for (key, plugin) in &self.plugins {
-            if !plugin.pre(key, &mut record) {
+        for (_, plugin) in &self.plugins {
+            if !plugin.pre(&mut record) {
                 self.reuse(record);
                 return None;
             }
@@ -87,8 +87,8 @@ impl Logger {
 
     #[inline]
     pub fn flush(&self, mut record: Record) {
-        for (key, plugin) in &self.plugins {
-            if !plugin.post(key, &mut record) {
+        for (_, plugin) in &self.plugins {
+            if !plugin.post(&mut record) {
                 self.reuse(record);
                 return;
             }
@@ -96,8 +96,8 @@ impl Logger {
 
         record.finish();
 
-        for (key, target) in &self.targets {
-            target.write(key, record.buffer());
+        for (_, target) in &self.targets {
+            target.write(record.buffer());
         }
 
         self.reuse(record);

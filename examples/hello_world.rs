@@ -24,13 +24,13 @@ fn main() {
     struct PidPlugin;
 
     impl logkit::Plugin for PidPlugin {
-        fn post(&self, key: &str, record: &mut logkit::Record) -> bool {
-            record.append(key, std::process::id());
+        fn post(&self, record: &mut logkit::Record) -> bool {
+            record.append("pid", std::process::id());
             true
         }
     }
 
     logkit::default_logger_mut().mount("pid", Box::new(PidPlugin));
 
-    info!("you will see logs with process id");
+    info!("you will see this log with process id");
 }

@@ -2,14 +2,14 @@
 use super::define::*;
 
 pub trait Target: Sync + Send {
-    fn write(&self, key: &str, buf: &[u8]);
+    fn write(&self, buf: &[u8]);
 }
 
 pub struct StdoutTarget;
 
 impl Target for StdoutTarget {
     #[inline]
-    fn write(&self, _key: &str, buf: &[u8]) {
+    fn write(&self, buf: &[u8]) {
         let _ = std::io::stdout().write_all(buf);
     }
 }
@@ -18,7 +18,7 @@ pub struct StderrTarget;
 
 impl Target for StderrTarget {
     #[inline]
-    fn write(&self, _key: &str, buf: &[u8]) {
+    fn write(&self, buf: &[u8]) {
         let _ = std::io::stderr().write_all(buf);
     }
 }
@@ -35,7 +35,7 @@ impl FileTarget {
 
 impl Target for FileTarget {
     #[inline]
-    fn write(&self, _key: &str, buf: &[u8]) {
+    fn write(&self, buf: &[u8]) {
         {
             let file = self.file.lock();
             let _ = file.borrow_mut().write_all(buf);
