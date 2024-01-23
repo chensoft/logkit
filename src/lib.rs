@@ -1,7 +1,7 @@
 //! Logkit
 //!
 //! Logkit is a JSON-style structured logging library written in Rust, aiming to achieve high
-//! performance and customizability. To reach these goals, I have created a fast encoding library
+//! performance and customizability. To reach these goals, We have created a fast encoding library
 //! and added a flexible plugin system to it.
 //!
 //! ## Basic Syntax
@@ -46,7 +46,7 @@
 //! ```
 //! let mut logger = logkit::Logger::new();
 //! logger.mount("level", Box::new(logkit::LevelPlugin)); // you can define your own plugin
-//! logger.route("stdout", Box::new(logkit::StderrTarget)); // and define your custom target
+//! logger.route("default", Box::new(logkit::StderrTarget)); // and define your custom target
 //!
 //! // replace the default logger
 //! logkit::set_default_logger(logger);
@@ -55,7 +55,7 @@
 //!
 //! ## Custom Level
 //!
-//! There are five built-in logging levels: trace, debug, info, warn and error. You can define your
+//! There are five built-in log levels: trace, debug, info, warn and error. You can define your
 //! own levels, as the type is simply an alias for i32, not an enum.
 //!
 //! ```
@@ -71,6 +71,26 @@
 //! custom!("this is a custom log level");
 //! ```
 //!
+//! ## Custom Encoding
+//! 
+//! We support all scalar types and many std collections, if you want to encode your own type into
+//! json, you can implement the Encode trait.
+//! 
+//! ```
+//! pub struct CustomStruct {
+//!     pub key1: i32,
+//!     pub key2: bool,
+//!     pub key3: String,
+//! }
+//!
+//! impl logkit::Encode for CustomStruct {
+//!     fn encode(&self, buf: &mut Vec<u8>) {
+//!         // format your struct into buf
+//!         todo!()
+//!     }
+//! }
+//! ```
+//! 
 //! ## Logging Plugin
 //!
 //! Plugins, also known as middleware, add hooks for pre and post steps. When a logger spawns a

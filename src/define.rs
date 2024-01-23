@@ -1,4 +1,4 @@
-//! Logging levels and Encode trait
+//! Log levels and Encode trait
 pub(crate) use std::io::Write;
 pub(crate) use std::borrow::Cow;
 pub(crate) use std::cell::RefCell;
@@ -8,10 +8,22 @@ pub(crate) use parking_lot::ReentrantMutex;
 pub(crate) use parking_lot::RwLockReadGuard;
 pub(crate) use parking_lot::RwLockWriteGuard;
 
-/// Trait
-pub use encoder::json::Encode;
-
-/// Level
+/// Log Level
+/// 
+/// This type is simply an alias for i32. It was not implemented as an enum to allow for extension.
+/// 
+/// ```
+/// pub const LEVEL_CUSTOM : logkit::Level = 10; // use any number distinct from the built-ins
+///
+/// #[macro_export]
+/// macro_rules! custom {
+///     ($($arg:tt)*) => {{
+///         logkit::record!(LEVEL_CUSTOM, $($arg)*)
+///     }};
+/// }
+///
+/// custom!("this is a custom log level");
+/// ```
 pub type Level = i32;
 
 pub const LEVEL_TRACE : Level = 0;
@@ -42,3 +54,25 @@ pub fn str_to_level(level: &str) -> Level {
         _ => LEVEL_OFF,
     }
 }
+
+/// Encode Trait
+///
+/// This trait is used for formatting a field's value. Encoding support has already been added for
+/// all scalar types and many standard collections. If you wish to format your own type, just
+/// implement this trait.
+///
+/// ```
+/// pub struct CustomStruct {
+///     pub key1: i32,
+///     pub key2: bool,
+///     pub key3: String,
+/// }
+///
+/// impl logkit::Encode for CustomStruct {
+///     fn encode(&self, buf: &mut Vec<u8>) {
+///         // format your struct into buf
+///         todo!()
+///     }
+/// }
+/// ```
+pub use encoder::json::Encode;
