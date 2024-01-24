@@ -54,7 +54,7 @@ impl Logger {
     /// Create a logger object with some predefined behaviours
     ///
     /// This object adds level and time fields to any records and includes a stack trace for
-    /// records at the ERROR level. The output is directed to stdout by default.
+    /// records at the `ERROR` level. The output is directed to stdout by default.
     ///
     /// Note that this configuration is used by the global default logger. If you want to modify
     /// the global default logger, you can use the following example code:
@@ -136,7 +136,7 @@ impl Logger {
     ///
     /// Internally, each log is represented by a record, which contains level information and
     /// a cached buffer. You can append numerous fields to a record. The println-like message is
-    /// also treated as a normal field with the key named msg.
+    /// also treated as a normal field with the key named `msg`.
     ///
     /// ```
     /// let mut logger = logkit::Logger::new();
@@ -174,6 +174,20 @@ impl Logger {
         Some(record)
     }
 
+    /// Finish and output a record
+    ///
+    /// The `post` method of plugins will be called. If you wish to prevent output to targets,
+    /// simply return `false`. Once the `finish` method is invoked, the record will be directed
+    /// to all installed targets for output.
+    ///
+    /// ```
+    /// let mut logger = logkit::Logger::new();
+    /// logger.route("default", Box::new(logkit::StdoutTarget));
+    /// if let Some(mut record) = logger.spawn(logkit::LEVEL_DEBUG) {
+    ///     record.append("msg", "this log will be directed to stdout");
+    ///     logger.flush(record);
+    /// }
+    /// ```
     #[inline]
     pub fn flush(&self, mut record: Record) {
         for (_, plugin) in &self.plugins {
@@ -192,6 +206,10 @@ impl Logger {
         self.reuse(record);
     }
 
+    /// Places the record back into the object pool for reuse.
+    ///
+    /// The `flush` method calls this function automatically, so typically you don't need to
+    /// invoke it manually.
     #[inline]
     pub fn reuse(&self, record: Record) {
         {

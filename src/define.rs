@@ -31,6 +31,7 @@ pub const LEVEL_WARN  : Level = 3;
 pub const LEVEL_ERROR : Level = 4;
 pub const LEVEL_OFF   : Level = i32::MAX;
 
+/// Level to string
 pub fn level_to_str(level: Level) -> Option<&'static str> {
     match level {
         LEVEL_TRACE => Some("trace"),
@@ -42,6 +43,7 @@ pub fn level_to_str(level: Level) -> Option<&'static str> {
     }
 }
 
+/// String to level
 pub fn str_to_level(level: &str) -> Level {
     match level {
         "trace" => LEVEL_TRACE,

@@ -170,11 +170,11 @@ pub mod plugin;
 pub mod record;
 pub mod target;
 
-#[doc(hidden)]
+#[doc(inline)]
 pub use define::*;
 #[doc(hidden)]
 pub use logger::*;
-#[doc(hidden)]
+#[doc(inline)]
 pub use macros::*;
 #[doc(hidden)]
 pub use plugin::*;
