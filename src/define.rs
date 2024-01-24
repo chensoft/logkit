@@ -71,7 +71,7 @@ pub fn str_to_level(level: &str) -> Level {
 /// impl logkit::Encode for CustomStruct {
 ///     fn encode(&self, buf: &mut Vec<u8>) {
 ///         // format your struct into buf
-///         todo!()
+///         unimplemented!()
 ///     }
 /// }
 /// ```

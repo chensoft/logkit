@@ -141,7 +141,7 @@ impl Logger {
     /// ```
     /// let mut logger = logkit::Logger::new();
     /// logger.route("default", Box::new(logkit::StdoutTarget));
-    /// if let Some(mut record) = logger.spawn(logkit::LEVEL_DEBUG) {
+    /// if let Some(mut record) = logger.spawn(logkit::LEVEL_TRACE) {
     ///     record.append("hello", "world");
     ///     record.finish();
     ///     assert_eq!(String::from_utf8_lossy(record.buffer().as_slice()), "{\"hello\":\"world\"}\n")
@@ -157,12 +157,10 @@ impl Logger {
             let guard = self.records.lock();
             let mut array = guard.borrow_mut();
             match array.pop() {
-                None => Record::default(),
-                Some(val) => val,
+                None => Record::new(level, self.alloc),
+                Some(val) => Record::set(val, level),
             }
         };
-
-        record.reset(level, self.alloc);
 
         for (_, plugin) in &self.plugins {
             if !plugin.pre(&mut record) {
@@ -183,7 +181,7 @@ impl Logger {
     /// ```
     /// let mut logger = logkit::Logger::new();
     /// logger.route("default", Box::new(logkit::StdoutTarget));
-    /// if let Some(mut record) = logger.spawn(logkit::LEVEL_DEBUG) {
+    /// if let Some(mut record) = logger.spawn(logkit::LEVEL_TRACE) {
     ///     record.append("msg", "this log will be directed to stdout");
     ///     logger.flush(record);
     /// }
