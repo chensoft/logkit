@@ -1,5 +1,6 @@
 //! Log levels and Encode trait
 pub(crate) use std::io::Write;
+pub(crate) use std::path::Path;
 pub(crate) use std::borrow::Cow;
 pub(crate) use std::cell::RefCell;
 pub(crate) use indexmap::IndexMap;
