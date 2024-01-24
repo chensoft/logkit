@@ -30,9 +30,9 @@
 //! ```
 //! #[macro_use] extern crate logkit;
 //!
-//! debug!("the current log level is {}", logkit::default_logger().level);
+//! debug!("the current log level is {}", logkit::default_logger().read().level);
 //!
-//! logkit::default_logger_mut().level = logkit::LEVEL_INFO;
+//! logkit::default_logger().write().level = logkit::LEVEL_INFO;
 //! debug!("debug logs are now hidden");
 //! info!("only logs with a level of 'info' or higher will be visible");
 //! ```
@@ -113,7 +113,7 @@
 //!     }
 //! }
 //!
-//! logkit::default_logger_mut().mount("pid", Box::new(PidPlugin {pid: std::process::id()}));
+//! logkit::default_logger().write().mount("pid", Box::new(PidPlugin {pid: std::process::id()}));
 //!
 //! info!("you will see this log with a process id");
 //! ```
@@ -131,7 +131,7 @@
 //!     }
 //! }
 //!
-//! logkit::default_logger_mut().mount("limit", Box::new(LimitPlugin));
+//! logkit::default_logger().write().mount("limit", Box::new(LimitPlugin));
 //!
 //! debug!("this log is ignored");
 //! info!("you can see this log");
@@ -156,7 +156,7 @@
 //!     }
 //! }
 //!
-//! logkit::default_logger_mut().route("stderr", Box::new(StderrTarget));
+//! logkit::default_logger().write().route("stderr", Box::new(StderrTarget));
 //! info!("record will be output to both stdout and stderr now");
 //! ```
 //!

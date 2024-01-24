@@ -37,14 +37,14 @@ fn main() {
     error!("this is a log with a 'println' style string {}:{}", "127.0.0.1", 3000.0);
 
     // set default logger's log level
-    logkit::default_logger_mut().level = logkit::LEVEL_INFO;
+    logkit::default_logger().write().level = logkit::LEVEL_INFO;
 
     debug!("you can't see this log because the level is below 'info'");
-    info!("only logs with a level equal to or higher than 'info' will be printed");
+    info!("only logs with a level equal to or higher than 'info' can be seen");
     error!("you can see this error log with stack trace");
 
     // remove logger's stack plugin
-    logkit::default_logger_mut().unmount("stack");
+    logkit::default_logger().write().unmount("stack");
 
     error!("stack trace printing feature has been disabled");
 
@@ -58,7 +58,7 @@ fn main() {
         }
     }
 
-    logkit::default_logger_mut().mount("pid", Box::new(PidPlugin {pid: std::process::id()}));
+    logkit::default_logger().write().mount("pid", Box::new(PidPlugin {pid: std::process::id()}));
 
     info!("you will see this log with a process id");
 }

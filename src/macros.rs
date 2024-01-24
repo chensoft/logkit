@@ -6,12 +6,8 @@ lazy_static! {
     static ref DEFAULT_LOGGER: RwLock<Logger> = RwLock::new(Logger::def());
 }
 
-pub fn default_logger() -> RwLockReadGuard<'static, Logger> {
-    DEFAULT_LOGGER.read()
-}
-
-pub fn default_logger_mut() -> RwLockWriteGuard<'static, Logger> {
-    DEFAULT_LOGGER.write()
+pub fn default_logger() -> &'static RwLock<Logger> {
+    &DEFAULT_LOGGER
 }
 
 pub fn set_default_logger(logger: Logger) {
@@ -59,8 +55,8 @@ macro_rules! record {
     // {}
     ($lvl:expr $(,)?) => {{
         let logger = $crate::default_logger();
-        if let Some(record) = logger.spawn($lvl) {
-            logger.flush(record);
+        if let Some(record) = logger.read().spawn($lvl) {
+            logger.read().flush(record);
         }
     }};
 
@@ -74,9 +70,9 @@ macro_rules! record {
     // {"msg":"Hi Alice! It's been 2 years since our last trip together."}
     ($lvl:expr, $fmt:literal, $($arg:tt)*) => {{
         let logger = $crate::default_logger();
-        if let Some(mut record) = logger.spawn($lvl) {
+        if let Some(mut record) = logger.read().spawn($lvl) {
             record.append("msg", format!($fmt, $($arg)*));
-            logger.flush(record);
+            logger.read().flush(record);
         }
     }};
 
@@ -84,9 +80,9 @@ macro_rules! record {
     // {"name":"Alice","age":20}
     ($lvl:expr, $($key:tt = $val:expr),*) => {{
         let logger = $crate::default_logger();
-        if let Some(mut record) = logger.spawn($lvl) {
+        if let Some(mut record) = logger.read().spawn($lvl) {
             $(record.append(stringify!($key), $val);)*
-            logger.flush(record);
+            logger.read().flush(record);
         }
     }};
 
@@ -100,11 +96,11 @@ macro_rules! record {
     // {"msg":"Hi Bob! I know, time flies. I've visited 3 countries since then.","name":"Alice","age":20}
     ($lvl:expr, $($key:tt = $val:expr),+; $fmt:literal, $($arg:tt)*) => {{
         let logger = $crate::default_logger();
-        if let Some(mut record) = logger.spawn($lvl) {
+        if let Some(mut record) = logger.read().spawn($lvl) {
             record.append("msg", format!($fmt, $($arg)*));
             $(record.append(stringify!($key), $val);)*
 
-            logger.flush(record);
+            logger.read().flush(record);
         }
     }};
 }

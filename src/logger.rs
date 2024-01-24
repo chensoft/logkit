@@ -61,13 +61,13 @@ impl Logger {
     ///
     /// ```
     /// // unmount the stack plugin
-    /// logkit::default_logger_mut().unmount("stack");
+    /// logkit::default_logger().write().unmount("stack");
     ///
     /// // use nanoseconds time plugin
-    /// logkit::default_logger_mut().mount("time", Box::new(logkit::TimePlugin::from_nanos()));
+    /// logkit::default_logger().write().mount("time", Box::new(logkit::TimePlugin::from_nanos()));
     ///
     /// // change default target to stderr
-    /// logkit::default_logger_mut().route("default", Box::new(logkit::StderrTarget));
+    /// logkit::default_logger().write().route("default", Box::new(logkit::StderrTarget));
     /// ```
     pub fn def() -> Self {
         let mut obj = Logger::new();
