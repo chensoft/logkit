@@ -2,14 +2,20 @@
 use super::define::*;
 use super::record::*;
 
+/// The Plugin Trait
+///
+/// A plugin can be used to customize a record. You can append additional fields to a record before
+/// or after the `msg` field.
 #[allow(unused_variables)]
 pub trait Plugin: Sync + Send {
+    /// Invoked before the `msg` field is appended to a record
     #[inline]
     #[must_use]
     fn pre(&self, record: &mut Record) -> bool {
         true
     }
 
+    /// Invoked after the `msg` field is appended to a record
     #[inline]
     #[must_use]
     fn post(&self, record: &mut Record) -> bool {
@@ -17,6 +23,11 @@ pub trait Plugin: Sync + Send {
     }
 }
 
+/// Add a level string to a record
+///
+/// ```json,no_run
+/// {"level":"info"}
+/// ```
 pub struct LevelPlugin;
 
 impl Plugin for LevelPlugin {
@@ -31,27 +42,44 @@ impl Plugin for LevelPlugin {
     }
 }
 
+/// Add a rfc3339 datetime string to a record
 pub struct TimePlugin {
     pub format: chrono::SecondsFormat,
 }
 
 impl TimePlugin {
-    // e.g: 2024-01-03T11:01:00+08:00
+    /// Second-level precision
+    ///
+    /// ```json,no_run
+    /// {"time":"2024-01-03T11:01:00+08:00"}
+    /// ```
     pub fn from_secs() -> Self {
         Self {format: chrono::SecondsFormat::Secs}
     }
 
-    // e.g: 2024-01-03T11:01:00.123+08:00
+    /// Millisecond-level precision
+    ///
+    /// ```json,no_run
+    /// {"time":"2024-01-03T11:01:00.123+08:00"}
+    /// ```
     pub fn from_millis() -> Self {
         Self {format: chrono::SecondsFormat::Millis}
     }
 
-    // e.g: 2024-01-03T11:01:00.123456+08:00
+    /// Microsecond-level precision
+    ///
+    /// ```json,no_run
+    /// {"time":"2024-01-03T11:01:00.123456+08:00"}
+    /// ```
     pub fn from_micros() -> Self {
         Self {format: chrono::SecondsFormat::Micros}
     }
 
-    // e.g: 2024-01-03T11:01:00.123456789+08:00
+    /// Nanosecond-level precision
+    ///
+    /// ```json,no_run
+    /// {"time":"2024-01-03T11:01:00.123456789+08:00"}
+    /// ```
     pub fn from_nanos() -> Self {
         Self {format: chrono::SecondsFormat::Nanos}
     }
@@ -66,11 +94,12 @@ impl Plugin for TimePlugin {
     }
 }
 
+/// Represent a stack trace frame
 #[derive(Debug, Default, Clone)]
 pub struct StackFrame {
-    pub funcname: String,
-    pub filename: String,
-    pub lineno: u32,
+    pub funcname: String, // function name
+    pub filename: String, // file name
+    pub lineno: u32,      // line number
 }
 
 impl Encode for StackFrame {
@@ -96,6 +125,13 @@ impl Encode for StackFrame {
     }
 }
 
+/// Add a stack trace to a record
+///
+/// Note that this plugin disregards frames internal to Rust and this crate.
+///
+/// ```json,no_run
+/// {"stack":[{"funcname":"hello_world::main::h95297a3226de826e","filename":"/logkit/examples/hello_world.rs","lineno":9}]}
+/// ```
 pub struct StackPlugin {
     pub level: Level,
 }

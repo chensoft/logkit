@@ -1,10 +1,20 @@
 //! Target trait and built-in output targets
 use super::define::*;
 
+/// The Target Trait
+///
+/// After completion, a record is directed to targets, whose purpose is to output the record's
+/// content to various locations. A single record can be associated with multiple targets.
 pub trait Target: Sync + Send {
     fn write(&self, buf: &[u8]);
 }
 
+/// Output to stdout
+///
+/// ```
+/// let mut logger = logkit::Logger::new();
+/// logger.route("default", Box::new(logkit::StdoutTarget));
+/// ```
 pub struct StdoutTarget;
 
 impl Target for StdoutTarget {
@@ -14,6 +24,12 @@ impl Target for StdoutTarget {
     }
 }
 
+/// Output to stderr
+///
+/// ```
+/// let mut logger = logkit::Logger::new();
+/// logger.route("default", Box::new(logkit::StderrTarget));
+/// ```
 pub struct StderrTarget;
 
 impl Target for StderrTarget {
@@ -23,6 +39,12 @@ impl Target for StderrTarget {
     }
 }
 
+/// Output to a file
+///
+/// ```
+/// let mut logger = logkit::Logger::new();
+/// logger.route("default", Box::new(logkit::FileTarget::new("/tmp/sample.log")));
+/// ```
 pub struct FileTarget {
     pub file: ReentrantMutex<RefCell<std::fs::File>>,
 }
