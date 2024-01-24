@@ -42,8 +42,11 @@ impl Target for StderrTarget {
 /// Output to a file
 ///
 /// ```
-/// let mut logger = logkit::Logger::new();
-/// logger.route("default", Box::new(logkit::FileTarget::new("/tmp/sample.log")));
+/// fn main() -> anyhow::Result<()> {
+///     let mut logger = logkit::Logger::new();
+///     logger.route("default", Box::new(logkit::FileTarget::new("/tmp/sample.log")?));
+///     Ok(())
+/// }
 /// ```
 pub struct FileTarget {
     pub file: ReentrantMutex<RefCell<std::fs::File>>,

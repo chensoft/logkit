@@ -6,7 +6,8 @@
 //!
 //! ## Basic Syntax
 //!
-//! This library supports the following built-in log formats, you can define custom macros if needed.
+//! Five convenient macros are available for use: `trace`, `debug`, `info`, `warn`, and `error`.
+//! These support the following log formats, and you can define custom macros if necessary.
 //!
 //! ```
 //! #[macro_use] extern crate logkit;
@@ -55,7 +56,7 @@
 //!
 //! ## Custom Level
 //!
-//! There are five built-in log levels: trace, debug, info, warn and error. You can define your
+//! There are five built-in log levels: `TRACE`, `DEBUG`, `INFO`, `WARN` and `ERROR`. You can define your
 //! own levels, as the type is simply an alias for i32, not an enum.
 //!
 //! ```
@@ -86,14 +87,14 @@
 //! impl logkit::Encode for CustomStruct {
 //!     fn encode(&self, buf: &mut Vec<u8>) {
 //!         // format your struct into buf
-//!         todo!()
+//!         unimplemented!()
 //!     }
 //! }
 //! ```
 //! 
 //! ## Logging Plugin
 //!
-//! Plugins, also known as middleware, add hooks for pre and post steps. When a logger spawns a
+//! Plugins, also known as middleware, add hooks for `pre` and `post` steps. When a logger spawns a
 //! record, the `pre` method is called before any fields are added to it. When the record is ready
 //! to flush, the `post` method is invoked before outputting to targets. You can add any fields
 //! to the record. If you decide not to continue handling the record, simply return `false` in

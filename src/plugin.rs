@@ -6,6 +6,8 @@ use super::record::*;
 ///
 /// A plugin can be used to customize a record. You can append additional fields to a record before
 /// or after the `msg` field.
+///
+/// You can terminate the log processing in advance, simply return `false` in `pre` or `post`.
 #[allow(unused_variables)]
 pub trait Plugin: Sync + Send {
     /// Invoked before the `msg` field is appended to a record

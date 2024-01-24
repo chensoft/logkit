@@ -10,12 +10,7 @@
 - highlight keywords in console output
 - sampling by level
 
-### Added
-### Fixed
-### Changed
-### Removed
-
-## [0.1.0] - 2024-01-xx
+## [0.1.0] - 2024-01-24
 
 ### Added
 
