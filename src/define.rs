@@ -33,6 +33,7 @@ pub const LEVEL_ERROR : Level = 4;
 pub const LEVEL_OFF   : Level = i32::MAX;
 
 /// Level to string
+#[inline]
 pub fn level_to_str(level: Level) -> Option<&'static str> {
     match level {
         LEVEL_TRACE => Some("trace"),
@@ -45,6 +46,7 @@ pub fn level_to_str(level: Level) -> Option<&'static str> {
 }
 
 /// String to level
+#[inline]
 pub fn str_to_level(level: &str) -> Level {
     match level {
         "trace" => LEVEL_TRACE,
@@ -70,6 +72,7 @@ pub fn str_to_level(level: &str) -> Level {
 /// }
 ///
 /// impl logkit::Encode for CustomStruct {
+///     #[inline]
 ///     fn encode(&self, buf: &mut Vec<u8>) {
 ///         // format your struct into buf
 ///         unimplemented!()

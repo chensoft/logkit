@@ -85,6 +85,7 @@
 //! }
 //!
 //! impl logkit::Encode for CustomStruct {
+//!     #[inline]
 //!     fn encode(&self, buf: &mut Vec<u8>) {
 //!         // format your struct into buf
 //!         unimplemented!()
