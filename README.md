@@ -78,6 +78,32 @@ Output sample:
 {"level":"info","time":"2024-01-24T15:53:44.388+08:00","msg":"you will see this log with a process id","pid":53864}
 ```
 
+## Benchmark
+
+- MacBook Air, Apple M2 24G, macOS 14.2.1
+
+| Name              |              Time               |
+|:------------------|:-------------------------------:|
+| empty_log         | [27.267 ns 27.301 ns 27.338 ns] |
+| level_off         | [6.4178 ns 6.4320 ns 6.4461 ns] |
+| msg_only          | [61.319 ns 61.368 ns 61.420 ns] |
+| msg_format        | [61.276 ns 61.333 ns 61.394 ns] |
+| fields_only       | [95.099 ns 95.215 ns 95.345 ns] |
+| fields_msg        | [144.15 ns 144.27 ns 144.41 ns] |
+| fields_msg_format | [144.08 ns 144.20 ns 144.33 ns] |
+
+- AWS c5.2xlarge, 8C 16G, Ubuntu 22.04
+
+| Name              |              Time               |
+|:------------------|:-------------------------------:|
+| empty_log         | [73.345 ns 73.382 ns 73.419 ns] |
+| level_off         | [16.151 ns 16.152 ns 16.153 ns] |
+| msg_only          | [150.31 ns 150.33 ns 150.35 ns] |
+| msg_format        | [146.70 ns 146.71 ns 146.73 ns] |
+| fields_only       | [228.48 ns 228.51 ns 228.55 ns] |
+| fields_msg        | [314.71 ns 314.75 ns 314.79 ns] |
+| fields_msg_format | [314.65 ns 314.69 ns 314.73 ns] |
+
 ## Documentation
 
 The documentation is [available here](https://docs.rs/logkit).
