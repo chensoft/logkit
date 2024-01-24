@@ -13,7 +13,7 @@ pub trait Target: Sync + Send {
 ///
 /// ```
 /// let mut logger = logkit::Logger::new();
-/// logger.route("default", Box::new(logkit::StdoutTarget));
+/// logger.route("default", logkit::StdoutTarget);
 /// ```
 pub struct StdoutTarget;
 
@@ -28,7 +28,7 @@ impl Target for StdoutTarget {
 ///
 /// ```
 /// let mut logger = logkit::Logger::new();
-/// logger.route("default", Box::new(logkit::StderrTarget));
+/// logger.route("default", logkit::StderrTarget);
 /// ```
 pub struct StderrTarget;
 
@@ -46,7 +46,7 @@ impl Target for StderrTarget {
 ///     let mut sample = std::env::temp_dir();
 ///     sample.push("sample.log");
 ///     let mut logger = logkit::Logger::new();
-///     logger.route("default", Box::new(logkit::FileTarget::new(sample)?));
+///     logger.route("default", logkit::FileTarget::new(sample)?);
 ///     Ok(())
 /// }
 /// ```

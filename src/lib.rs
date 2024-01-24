@@ -46,8 +46,8 @@
 //!
 //! ```
 //! let mut logger = logkit::Logger::new();
-//! logger.mount("level", Box::new(logkit::LevelPlugin)); // you can define your own plugin
-//! logger.route("default", Box::new(logkit::StderrTarget)); // and define your custom target
+//! logger.mount("level", logkit::LevelPlugin); // you can define your own plugin
+//! logger.route("default", logkit::StderrTarget); // and define your custom target
 //!
 //! // replace the default logger
 //! logkit::set_default_logger(logger);
@@ -115,7 +115,7 @@
 //!     }
 //! }
 //!
-//! logkit::default_logger().write().mount("pid", Box::new(PidPlugin {pid: std::process::id()}));
+//! logkit::default_logger().write().mount("pid", PidPlugin {pid: std::process::id()});
 //!
 //! info!("you will see this log with a process id");
 //! ```
@@ -133,7 +133,7 @@
 //!     }
 //! }
 //!
-//! logkit::default_logger().write().mount("limit", Box::new(LimitPlugin));
+//! logkit::default_logger().write().mount("limit", LimitPlugin);
 //!
 //! debug!("this log is ignored");
 //! info!("you can see this log");
@@ -158,7 +158,7 @@
 //!     }
 //! }
 //!
-//! logkit::default_logger().write().route("stderr", Box::new(StderrTarget));
+//! logkit::default_logger().write().route("stderr", StderrTarget);
 //! info!("record will be output to both stdout and stderr now");
 //! ```
 //!

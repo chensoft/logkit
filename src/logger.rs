@@ -64,17 +64,17 @@ impl Logger {
     /// logkit::default_logger().write().unmount("stack");
     ///
     /// // use nanoseconds time plugin
-    /// logkit::default_logger().write().mount("time", Box::new(logkit::TimePlugin::from_nanos()));
+    /// logkit::default_logger().write().mount("time", logkit::TimePlugin::from_nanos());
     ///
     /// // change default target to stderr
-    /// logkit::default_logger().write().route("default", Box::new(logkit::StderrTarget));
+    /// logkit::default_logger().write().route("default", logkit::StderrTarget);
     /// ```
     pub fn def() -> Self {
         let mut obj = Logger::new();
-        obj.mount("level", Box::new(LevelPlugin));
-        obj.mount("time", Box::new(TimePlugin::from_millis()));
-        obj.mount("stack", Box::new(StackPlugin {level: LEVEL_ERROR}));
-        obj.route("default", Box::new(StdoutTarget));
+        obj.mount("level", LevelPlugin);
+        obj.mount("time", TimePlugin::from_millis());
+        obj.mount("stack", StackPlugin {level: LEVEL_ERROR});
+        obj.route("default", StdoutTarget);
         obj
     }
 
@@ -84,10 +84,10 @@ impl Logger {
     /// 
     /// ```
     /// let mut logger = logkit::Logger::new();
-    /// logger.mount("level", Box::new(logkit::LevelPlugin));
+    /// logger.mount("level", logkit::LevelPlugin);
     /// ```
-    pub fn mount(&mut self, key: impl Into<Cow<'static, str>>, plugin: Box<dyn Plugin>) -> &mut Self {
-        self.plugins.insert(key.into(), plugin);
+    pub fn mount(&mut self, key: impl Into<Cow<'static, str>>, plugin: impl Plugin + 'static) -> &mut Self {
+        self.plugins.insert(key.into(), Box::new(plugin));
         self
     }
 
@@ -108,10 +108,10 @@ impl Logger {
     ///
     /// ```
     /// let mut logger = logkit::Logger::new();
-    /// logger.route("default", Box::new(logkit::StdoutTarget));
+    /// logger.route("default", logkit::StdoutTarget);
     /// ```
-    pub fn route(&mut self, key: impl Into<Cow<'static, str>>, target: Box<dyn Target>) -> &mut Self {
-        self.targets.insert(key.into(), target);
+    pub fn route(&mut self, key: impl Into<Cow<'static, str>>, target: impl Target + 'static) -> &mut Self {
+        self.targets.insert(key.into(), Box::new(target));
         self
     }
 
@@ -140,7 +140,7 @@ impl Logger {
     ///
     /// ```
     /// let mut logger = logkit::Logger::new();
-    /// logger.route("default", Box::new(logkit::StdoutTarget));
+    /// logger.route("default", logkit::StdoutTarget);
     /// if let Some(mut record) = logger.spawn(logkit::LEVEL_TRACE) {
     ///     record.append("hello", "world");
     ///     record.finish();
@@ -180,7 +180,7 @@ impl Logger {
     ///
     /// ```
     /// let mut logger = logkit::Logger::new();
-    /// logger.route("default", Box::new(logkit::StdoutTarget));
+    /// logger.route("default", logkit::StdoutTarget);
     /// if let Some(mut record) = logger.spawn(logkit::LEVEL_TRACE) {
     ///     record.append("msg", "this log will be directed to stdout");
     ///     logger.flush(record);

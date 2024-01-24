@@ -30,7 +30,7 @@ fn main() {
         }
     }
 
-    logkit::default_logger().write().mount("pid", Box::new(PidPlugin {pid: std::process::id()}));
+    logkit::default_logger().write().mount("pid", PidPlugin {pid: std::process::id()});
 
     info!("you will see this log with a process id");
 }

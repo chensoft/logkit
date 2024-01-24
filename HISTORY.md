@@ -14,7 +14,7 @@
 
 ### Added
 
-- benchmarks
+- benchmark
 
 ### Changed
 
