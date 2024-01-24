@@ -10,6 +10,16 @@
 - highlight keywords in console output
 - sampling by level
 
+## [0.1.1] - 2024-01-24
+
+### Added
+
+- benchmarks
+
+### Changed
+
+- `record` macro accept custom logger
+
 ## [0.1.0] - 2024-01-24
 
 ### Added

@@ -17,7 +17,7 @@ pub(crate) use parking_lot::ReentrantMutex;
 /// #[macro_export]
 /// macro_rules! custom {
 ///     ($($arg:tt)*) => {{
-///         logkit::record!(LEVEL_CUSTOM, $($arg)*)
+///         logkit::record!(logkit::default_logger(), LEVEL_CUSTOM, $($arg)*)
 ///     }};
 /// }
 ///
