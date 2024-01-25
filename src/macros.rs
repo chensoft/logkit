@@ -41,6 +41,10 @@ pub fn set_default_logger(logger: Logger) {
 /// trace!(name = "Alice", age = 20); // outputs only fields, no message
 /// trace!(name = "Alice", age = 20; "separate fields and messages with semicolon");
 /// trace!(name = "Alice", age = 20; "println-like message {} {}! with fields", "Hello", "World");
+///
+/// let mut name = "Alice";
+/// trace!(name = name, age = 10);
+/// trace!(name = name, age = 20);
 /// ```
 #[macro_export]
 macro_rules! trace {
@@ -157,7 +161,7 @@ macro_rules! record {
     // {"msg":"Hi Alice! It's been 2 years since our last trip together."}
     ($log:expr, $lvl:expr, $fmt:literal, $($arg:tt)*) => {{
         if let Some(mut record) = $log.spawn($lvl) {
-            record.append("msg", format!($fmt, $($arg)*));
+            record.append("msg", &format!($fmt, $($arg)*));
             $log.flush(record);
         }
     }};
@@ -166,7 +170,7 @@ macro_rules! record {
     // {"name":"Alice","age":20}
     ($log:expr, $lvl:expr, $($key:tt = $val:expr),*) => {{
         if let Some(mut record) = $log.spawn($lvl) {
-            $(record.append(stringify!($key), $val);)*
+            $(record.append(stringify!($key), &$val);)*
             $log.flush(record);
         }
     }};
@@ -181,8 +185,8 @@ macro_rules! record {
     // {"msg":"Hi Bob! I know, time flies. I've visited 3 countries since then.","name":"Alice","age":20}
     ($log:expr, $lvl:expr, $($key:tt = $val:expr),+; $fmt:literal, $($arg:tt)*) => {{
         if let Some(mut record) = $log.spawn($lvl) {
-            record.append("msg", format!($fmt, $($arg)*));
-            $(record.append(stringify!($key), $val);)*
+            record.append("msg", &format!($fmt, $($arg)*));
+            $(record.append(stringify!($key), &$val);)*
 
             $log.flush(record);
         }

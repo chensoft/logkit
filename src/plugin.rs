@@ -36,8 +36,8 @@ impl Plugin for LevelPlugin {
     #[inline]
     fn pre(&self, record: &mut Record) -> bool {
         match level_to_str(record.level()) {
-            None => record.append("level", record.level().to_string()),
-            Some(level) => record.append("level", level),
+            None => record.append("level", &record.level().to_string()),
+            Some(level) => record.append("level", &level),
         };
 
         true
@@ -91,7 +91,7 @@ impl Plugin for TimePlugin {
     #[inline]
     fn pre(&self, record: &mut Record) -> bool {
         let now = chrono::Local::now();
-        record.append("time", now.to_rfc3339_opts(self.format, false));
+        record.append("time", &now.to_rfc3339_opts(self.format, false));
         true
     }
 }
@@ -166,7 +166,7 @@ impl Plugin for StackPlugin {
             true
         });
 
-        record.append("stack", frames);
+        record.append("stack", &frames);
 
         true
     }

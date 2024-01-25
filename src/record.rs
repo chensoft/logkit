@@ -59,13 +59,13 @@ impl Record {
     ///
     /// ```
     /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512);
-    /// record.append("pid", 12345);
-    /// record.append("msg", "think outside the box");
+    /// record.append("pid", &12345);
+    /// record.append("msg", &"think outside the box");
     /// record.finish();
     /// assert_eq!(String::from_utf8_lossy(record.buffer().as_slice()), "{\"pid\":12345,\"msg\":\"think outside the box\"}\n");
     /// ```
     #[inline]
-    pub fn append(&mut self, key: &str, val: impl Encode) -> &mut Self {
+    pub fn append(&mut self, key: &str, val: &impl Encode) -> &mut Self { // todo into
         key.encode(&mut self.cache);
         self.cache.push(b':');
         val.encode(&mut self.cache);
@@ -94,7 +94,7 @@ impl Record {
     ///
     /// ```
     /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512);
-    /// record.append("msg", "less is more");
+    /// record.append("msg", &"less is more");
     /// record.finish();
     /// assert_eq!(String::from_utf8_lossy(record.buffer().as_slice()), "{\"msg\":\"less is more\"}\n");
     /// ```

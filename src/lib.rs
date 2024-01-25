@@ -110,7 +110,7 @@
 //! impl logkit::Plugin for PidPlugin {
 //!     #[inline]
 //!     fn post(&self, record: &mut logkit::Record) -> bool {
-//!         record.append("pid", self.pid);
+//!         record.append("pid", &self.pid);
 //!         true
 //!     }
 //! }
