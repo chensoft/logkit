@@ -4,8 +4,8 @@ pub(crate) use std::path::Path;
 pub(crate) use std::borrow::Cow;
 pub(crate) use std::cell::RefCell;
 pub(crate) use indexmap::IndexMap;
+pub(crate) use parking_lot::Mutex;
 pub(crate) use parking_lot::RwLock;
-pub(crate) use parking_lot::ReentrantMutex;
 
 /// Log Level
 /// 
@@ -17,7 +17,7 @@ pub(crate) use parking_lot::ReentrantMutex;
 /// #[macro_export]
 /// macro_rules! custom {
 ///     ($($arg:tt)*) => {{
-///         logkit::record!(logkit::default_logger(), LEVEL_CUSTOM, $($arg)*)
+///         logkit::record!(logkit::default_logger().read(), LEVEL_CUSTOM, $($arg)*)
 ///     }};
 /// }
 ///

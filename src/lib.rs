@@ -65,7 +65,7 @@
 //! #[macro_export]
 //! macro_rules! custom {
 //!     ($($arg:tt)*) => {{
-//!         logkit::record!(logkit::default_logger(), LEVEL_CUSTOM, $($arg)*)
+//!         logkit::record!(logkit::default_logger().read(), LEVEL_CUSTOM, $($arg)*)
 //!     }};
 //! }
 //!

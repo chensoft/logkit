@@ -12,7 +12,7 @@ pub struct Logger {
     pub level: Level, // log level limit
     pub alloc: usize, // record init capacity
 
-    records: ReentrantMutex<RefCell<Vec<Record>>>,         // records pool
+    records: Mutex<RefCell<Vec<Record>>>, // records pool
     plugins: IndexMap<Cow<'static, str>, Box<dyn Plugin>>, // middlewares
     targets: IndexMap<Cow<'static, str>, Box<dyn Target>>, // output targets
 }
@@ -36,7 +36,7 @@ impl Logger {
         let mut obj = Self {
             level: LEVEL_TRACE,
             alloc: 512,
-            records: ReentrantMutex::new(RefCell::new(vec![])),
+            records: Mutex::new(RefCell::new(vec![])),
             plugins: IndexMap::new(),
             targets: IndexMap::new()
         };
@@ -81,7 +81,7 @@ impl Logger {
     /// Install a plugin for records
     ///
     /// A plugin acts as middleware for logs. For more details, refer to `plugin.rs`.
-    /// 
+    ///
     /// ```
     /// let mut logger = logkit::Logger::new();
     /// logger.mount("level", logkit::LevelPlugin);
@@ -153,13 +153,15 @@ impl Logger {
             return None;
         }
 
-        let mut record = {
+        let record = {
             let guard = self.records.lock();
             let mut array = guard.borrow_mut();
-            match array.pop() {
-                None => Record::new(level, self.alloc),
-                Some(val) => Record::set(val, level),
-            }
+            array.pop()
+        };
+
+        let mut record = match record {
+            None => Record::new(level, self.alloc),
+            Some(val) => Record::set(val, level),
         };
 
         for (_, plugin) in &self.plugins {
@@ -210,10 +212,7 @@ impl Logger {
     /// invoke it manually.
     #[inline]
     pub fn reuse(&self, record: Record) {
-        {
-            let guard = self.records.lock();
-            let mut array = guard.borrow_mut();
-            array.push(record);
-        }
+        let guard = self.records.lock();
+        guard.borrow_mut().push(record);
     }
 }

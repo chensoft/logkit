@@ -45,7 +45,7 @@ pub fn set_default_logger(logger: Logger) {
 #[macro_export]
 macro_rules! trace {
     ($($arg:tt)*) => {{
-        $crate::record!($crate::default_logger(), $crate::LEVEL_TRACE, $($arg)*)
+        $crate::record!($crate::default_logger().read(), $crate::LEVEL_TRACE, $($arg)*)
     }};
 }
 
@@ -64,7 +64,7 @@ macro_rules! trace {
 #[macro_export]
 macro_rules! debug {
     ($($arg:tt)*) => {{
-        $crate::record!($crate::default_logger(), $crate::LEVEL_DEBUG, $($arg)*)
+        $crate::record!($crate::default_logger().read(), $crate::LEVEL_DEBUG, $($arg)*)
     }};
 }
 
@@ -83,7 +83,7 @@ macro_rules! debug {
 #[macro_export]
 macro_rules! info {
     ($($arg:tt)*) => {{
-        $crate::record!($crate::default_logger(), $crate::LEVEL_INFO, $($arg)*)
+        $crate::record!($crate::default_logger().read(), $crate::LEVEL_INFO, $($arg)*)
     }};
 }
 
@@ -102,7 +102,7 @@ macro_rules! info {
 #[macro_export]
 macro_rules! warn {
     ($($arg:tt)*) => {{
-        $crate::record!($crate::default_logger(), $crate::LEVEL_WARN, $($arg)*)
+        $crate::record!($crate::default_logger().read(), $crate::LEVEL_WARN, $($arg)*)
     }};
 }
 
@@ -121,7 +121,7 @@ macro_rules! warn {
 #[macro_export]
 macro_rules! error {
     ($($arg:tt)*) => {{
-        $crate::record!($crate::default_logger(), $crate::LEVEL_ERROR, $($arg)*)
+        $crate::record!($crate::default_logger().read(), $crate::LEVEL_ERROR, $($arg)*)
     }};
 }
 
@@ -130,20 +130,20 @@ macro_rules! error {
 /// ```
 /// #[macro_use] extern crate logkit;
 ///
-/// record!(logkit::default_logger(), logkit::LEVEL_TRACE);
-/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, "I'm ready for adventure!");
-/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, "Hi {}! It's been {} years since our last trip together.", "Alice", 2);
-/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, name = "Alice", age = 20);
-/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, name = "Alice", age = 20; "I'm ready for adventure!");
-/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, name = "Alice", age = 20; "Hi {}! I know, time flies. I've visited {} countries since then.", "Bob", 3);
+/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE);
+/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, "I'm ready for adventure!");
+/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, "Hi {}! It's been {} years since our last trip together.", "Alice", 2);
+/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = "Alice", age = 20);
+/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = "Alice", age = 20; "I'm ready for adventure!");
+/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = "Alice", age = 20; "Hi {}! I know, time flies. I've visited {} countries since then.", "Bob", 3);
 /// ```
 #[macro_export]
 macro_rules! record {
     // record!(logkit::LEVEL_TRACE);
     // {}
     ($log:expr, $lvl:expr $(,)?) => {{
-        if let Some(record) = $log.read().spawn($lvl) {
-            $log.read().flush(record);
+        if let Some(record) = $log.spawn($lvl) {
+            $log.flush(record);
         }
     }};
 
@@ -156,18 +156,18 @@ macro_rules! record {
     // record!(logkit::LEVEL_TRACE, "Hi {}! It's been {} years since our last trip together.", "Alice", 2);
     // {"msg":"Hi Alice! It's been 2 years since our last trip together."}
     ($log:expr, $lvl:expr, $fmt:literal, $($arg:tt)*) => {{
-        if let Some(mut record) = $log.read().spawn($lvl) {
+        if let Some(mut record) = $log.spawn($lvl) {
             record.append("msg", format!($fmt, $($arg)*));
-            $log.read().flush(record);
+            $log.flush(record);
         }
     }};
 
     // record!(logkit::LEVEL_TRACE, name = "Alice", age = 20);
     // {"name":"Alice","age":20}
     ($log:expr, $lvl:expr, $($key:tt = $val:expr),*) => {{
-        if let Some(mut record) = $log.read().spawn($lvl) {
+        if let Some(mut record) = $log.spawn($lvl) {
             $(record.append(stringify!($key), $val);)*
-            $log.read().flush(record);
+            $log.flush(record);
         }
     }};
 
@@ -180,11 +180,11 @@ macro_rules! record {
     // record!(logkit::LEVEL_TRACE, name = "Alice", age = 20; "Hi {}! I know, time flies. I've visited {} countries since then.", "Bob", 3);
     // {"msg":"Hi Bob! I know, time flies. I've visited 3 countries since then.","name":"Alice","age":20}
     ($log:expr, $lvl:expr, $($key:tt = $val:expr),+; $fmt:literal, $($arg:tt)*) => {{
-        if let Some(mut record) = $log.read().spawn($lvl) {
+        if let Some(mut record) = $log.spawn($lvl) {
             record.append("msg", format!($fmt, $($arg)*));
             $(record.append(stringify!($key), $val);)*
 
-            $log.read().flush(record);
+            $log.flush(record);
         }
     }};
 }
