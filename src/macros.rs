@@ -18,7 +18,7 @@ lazy_static! {
 /// info!("current log level is {}", logkit::default_logger().read().level);
 ///
 /// logkit::default_logger().write().level = logkit::LEVEL_INFO;
-/// logkit::default_logger().write().route("stderr", logkit::StderrTarget);
+/// logkit::default_logger().write().route(logkit::StderrTarget);
 /// ```
 #[inline]
 pub fn default_logger() -> &'static RwLock<Logger> {

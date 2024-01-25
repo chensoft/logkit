@@ -13,12 +13,23 @@ pub struct Logger {
     pub alloc: usize, // record init capacity
 
     records: Mutex<RefCell<Vec<Record>>>, // records pool
-    plugins: IndexMap<Cow<'static, str>, Box<dyn Plugin>>, // middlewares
-    targets: IndexMap<Cow<'static, str>, Box<dyn Target>>, // output targets
+    plugins: Vec<Box<dyn AnyPlugin>>,     // middlewares
+    targets: Vec<Box<dyn AnyTarget>>,     // output targets
 }
 
 impl Logger {
     /// Create a new clean logger object
+    pub const fn new() -> Self {
+        Self {
+            level: LEVEL_TRACE,
+            alloc: 512,
+            records: Mutex::new(RefCell::new(vec![])),
+            plugins: vec![],
+            targets: vec![],
+        }
+    }
+
+    /// Create a logger object from env
     ///
     /// You can define the env value `RUST_LOG` to control the init log level
     ///
@@ -32,22 +43,14 @@ impl Logger {
     /// # use numeric log level, **not recommended**
     /// export RUST_LOG=3
     /// ```
-    pub fn new() -> Self {
-        let mut obj = Self {
-            level: LEVEL_TRACE,
-            alloc: 512,
-            records: Mutex::new(RefCell::new(vec![])),
-            plugins: IndexMap::new(),
-            targets: IndexMap::new()
-        };
-
+    pub fn env() -> Self {
+        let mut obj = Logger::new();
         if let Ok(level) = std::env::var("RUST_LOG") {
             obj.level = match level.parse::<Level>() {
                 Ok(val) => val,
                 Err(_) => str_to_level(level.to_lowercase().as_str()),
             };
         }
-
         obj
     }
 
@@ -61,20 +64,20 @@ impl Logger {
     ///
     /// ```
     /// // unmount the stack plugin
-    /// logkit::default_logger().write().unmount("stack");
+    /// logkit::default_logger().write().unmount(|t| t.as_any().downcast_ref::<logkit::StackPlugin>().is_some());
     ///
     /// // use nanoseconds time plugin
-    /// logkit::default_logger().write().mount("time", logkit::TimePlugin::from_nanos());
+    /// logkit::default_logger().write().mount(logkit::TimePlugin::from_nanos());
     ///
     /// // change default target to stderr
-    /// logkit::default_logger().write().route("default", logkit::StderrTarget);
+    /// logkit::default_logger().write().route(logkit::StderrTarget);
     /// ```
     pub fn def() -> Self {
-        let mut obj = Logger::new();
-        obj.mount("level", LevelPlugin);
-        obj.mount("time", TimePlugin::from_millis());
-        obj.mount("stack", StackPlugin {level: LEVEL_ERROR});
-        obj.route("default", StdoutTarget);
+        let mut obj = Logger::env();
+        obj.mount(LevelPlugin);
+        obj.mount(TimePlugin::from_millis());
+        obj.mount(StackPlugin {level: LEVEL_ERROR});
+        obj.route(StdoutTarget);
         obj
     }
 
@@ -84,10 +87,10 @@ impl Logger {
     ///
     /// ```
     /// let mut logger = logkit::Logger::new();
-    /// logger.mount("level", logkit::LevelPlugin);
+    /// logger.mount(logkit::LevelPlugin);
     /// ```
-    pub fn mount(&mut self, key: impl Into<Cow<'static, str>>, plugin: impl Plugin + 'static) -> &mut Self {
-        self.plugins.insert(key.into(), Box::new(plugin));
+    pub fn mount(&mut self, plugin: impl Plugin + 'static) -> &mut Self {
+        self.plugins.push(Box::new(plugin));
         self
     }
 
@@ -95,10 +98,10 @@ impl Logger {
     ///
     /// ```
     /// let mut logger = logkit::Logger::def();
-    /// logger.unmount("level");
+    /// logger.unmount(|t| t.as_any().downcast_ref::<logkit::LevelPlugin>().is_some());
     /// ```
-    pub fn unmount(&mut self, key: &str) -> &mut Self {
-        self.plugins.remove(key);
+    pub fn unmount(&mut self, del: impl Fn(&Box<dyn AnyPlugin>) -> bool) -> &mut Self {
+        self.plugins.retain(|plugin| !del(plugin));
         self
     }
 
@@ -108,10 +111,10 @@ impl Logger {
     ///
     /// ```
     /// let mut logger = logkit::Logger::new();
-    /// logger.route("default", logkit::StdoutTarget);
+    /// logger.route(logkit::StdoutTarget);
     /// ```
-    pub fn route(&mut self, key: impl Into<Cow<'static, str>>, target: impl Target + 'static) -> &mut Self {
-        self.targets.insert(key.into(), Box::new(target));
+    pub fn route(&mut self, target: impl Target + 'static) -> &mut Self {
+        self.targets.push(Box::new(target));
         self
     }
 
@@ -119,10 +122,10 @@ impl Logger {
     ///
     /// ```
     /// let mut logger = logkit::Logger::def();
-    /// logger.unroute("default");
+    /// logger.unroute(|t| t.as_any().downcast_ref::<logkit::StdoutTarget>().is_some());
     /// ```
-    pub fn unroute(&mut self, key: &str) -> &mut Self {
-        self.targets.remove(key);
+    pub fn unroute(&mut self, del: impl Fn(&Box<dyn AnyTarget>) -> bool) -> &mut Self {
+        self.targets.retain(|target| !del(target));
         self
     }
 
@@ -140,7 +143,7 @@ impl Logger {
     ///
     /// ```
     /// let mut logger = logkit::Logger::new();
-    /// logger.route("default", logkit::StdoutTarget);
+    /// logger.route(logkit::StdoutTarget);
     /// if let Some(mut record) = logger.spawn(logkit::LEVEL_TRACE) {
     ///     record.append("hello", &"world");
     ///     record.finish();
@@ -164,7 +167,7 @@ impl Logger {
             Some(val) => Record::set(val, level),
         };
 
-        for (_, plugin) in &self.plugins {
+        for plugin in &self.plugins {
             if !plugin.pre(&mut record) {
                 self.reuse(record);
                 return None;
@@ -182,7 +185,7 @@ impl Logger {
     ///
     /// ```
     /// let mut logger = logkit::Logger::new();
-    /// logger.route("default", logkit::StdoutTarget);
+    /// logger.route(logkit::StdoutTarget);
     /// if let Some(mut record) = logger.spawn(logkit::LEVEL_TRACE) {
     ///     record.append("msg", &"this log will be directed to stdout");
     ///     logger.flush(record);
@@ -190,7 +193,7 @@ impl Logger {
     /// ```
     #[inline]
     pub fn flush(&self, mut record: Record) {
-        for (_, plugin) in &self.plugins {
+        for plugin in &self.plugins {
             if !plugin.post(&mut record) {
                 self.reuse(record);
                 return;
@@ -199,7 +202,7 @@ impl Logger {
 
         record.finish();
 
-        for (_, target) in &self.targets {
+        for target in &self.targets {
             target.write(record.buffer());
         }
 

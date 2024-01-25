@@ -10,14 +10,18 @@
 - highlight keywords in console output
 - sampling by level
 
-## [0.1.1] - 2024-01-24
+## [0.2.0] - 2024-01-25
 
 ### Added
 
 - benchmark
+- const constructor for Logger
 
 ### Changed
 
+- unmount a plugin using a callback
+- unroute a target using a callback
+- macros support trailing commas
 - `record` macro accept custom logger
 
 ## [0.1.0] - 2024-01-24

@@ -9,11 +9,22 @@ pub trait Target: Sync + Send {
     fn write(&self, buf: &[u8]);
 }
 
+/// To store arbitrary targets
+pub trait AnyTarget: Target + Any {
+    fn as_any(&self) -> &dyn Any;
+}
+
+impl<T: Target + Any> AnyTarget for T {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+}
+
 /// Output to stdout
 ///
 /// ```
 /// let mut logger = logkit::Logger::new();
-/// logger.route("default", logkit::StdoutTarget);
+/// logger.route(logkit::StdoutTarget);
 /// ```
 pub struct StdoutTarget;
 
@@ -28,7 +39,7 @@ impl Target for StdoutTarget {
 ///
 /// ```
 /// let mut logger = logkit::Logger::new();
-/// logger.route("default", logkit::StderrTarget);
+/// logger.route(logkit::StderrTarget);
 /// ```
 pub struct StderrTarget;
 
@@ -46,7 +57,7 @@ impl Target for StderrTarget {
 ///     let mut sample = std::env::temp_dir();
 ///     sample.push("sample.log");
 ///     let mut logger = logkit::Logger::new();
-///     logger.route("default", logkit::FileTarget::new(sample)?);
+///     logger.route(logkit::FileTarget::new(sample)?);
 ///     Ok(())
 /// }
 /// ```

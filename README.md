@@ -44,7 +44,7 @@ fn main() {
     error!("you can see this error log with stack trace");
 
     // remove logger's stack plugin
-    logkit::default_logger().write().unmount("stack");
+    logkit::default_logger().write().unmount(|t| t.as_any().downcast_ref::<logkit::StackPlugin>().is_some());
 
     error!("stack trace printing feature has been disabled");
 
@@ -53,7 +53,7 @@ fn main() {
 
     impl logkit::Plugin for PidPlugin {
         fn post(&self, record: &mut logkit::Record) -> bool {
-            record.append("pid", self.pid);
+            record.append("pid", &self.pid);
             true
         }
     }

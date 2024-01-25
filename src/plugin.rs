@@ -25,6 +25,17 @@ pub trait Plugin: Sync + Send {
     }
 }
 
+/// To store arbitrary plugins
+pub trait AnyPlugin: Plugin + Any {
+    fn as_any(&self) -> &dyn Any;
+}
+
+impl<T: Plugin + Any> AnyPlugin for T {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+}
+
 /// Add a level string to a record
 ///
 /// ```json,no_run
