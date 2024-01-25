@@ -41,10 +41,6 @@ pub fn set_default_logger(logger: Logger) {
 /// trace!(name = "Alice", age = 20); // outputs only fields, no message
 /// trace!(name = "Alice", age = 20; "separate fields and messages with semicolon");
 /// trace!(name = "Alice", age = 20; "println-like message {} {}! with fields", "Hello", "World");
-///
-/// let mut name = "Alice";
-/// trace!(name = name, age = 10);
-/// trace!(name = name, age = 20);
 /// ```
 #[macro_export]
 macro_rules! trace {
@@ -140,6 +136,16 @@ macro_rules! error {
 /// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = "Alice", age = 20);
 /// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = "Alice", age = 20; "I'm ready for adventure!");
 /// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = "Alice", age = 20; "Hi {}! I know, time flies. I've visited {} countries since then.", "Bob", 3);
+///
+/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, "trailing comma", );
+/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, "println-like with trailing comma {} {}!", "Hello", "World", );
+/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = "Alice", age = 20, ); // fields with trailing comma
+/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = "Alice", age = 20; "fields and message with trailing comma", );
+/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = "Alice", age = 20; "println-like with fields and trailing comma {}", "Hello", );
+///
+/// let mut name = "Alice";
+/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = name, age = 10);
+/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = name, age = 20); // field formatted twice
 /// ```
 #[macro_export]
 macro_rules! record {
@@ -168,9 +174,9 @@ macro_rules! record {
 
     // record!(logkit::LEVEL_TRACE, name = "Alice", age = 20);
     // {"name":"Alice","age":20}
-    ($log:expr, $lvl:expr, $($key:tt = $val:expr),*) => {{
+    ($log:expr, $lvl:expr, $($key:tt = $val:expr),+ $(,)?) => {{
         if let Some(mut record) = $log.spawn($lvl) {
-            $(record.append(stringify!($key), &$val);)*
+            $(record.append(stringify!($key), &$val);)+
             $log.flush(record);
         }
     }};
