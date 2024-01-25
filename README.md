@@ -91,6 +91,7 @@ Output sample:
 | fields_only       | [95.099 ns 95.215 ns 95.345 ns] |
 | fields_msg        | [144.15 ns 144.27 ns 144.41 ns] |
 | fields_msg_format | [144.08 ns 144.20 ns 144.33 ns] |
+| fields_ten_fields | [393.94 ns 396.83 ns 401.30 ns] |
 
 - AWS c5.2xlarge, 8C 16G, Ubuntu 22.04
 
@@ -103,6 +104,7 @@ Output sample:
 | fields_only       | [228.48 ns 228.51 ns 228.55 ns] |
 | fields_msg        | [314.71 ns 314.75 ns 314.79 ns] |
 | fields_msg_format | [314.65 ns 314.69 ns 314.73 ns] |
+| fields_ten_fields | [728.83 ns 729.04 ns 729.31 ns] |
 
 ## Documentation
 

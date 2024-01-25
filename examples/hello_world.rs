@@ -25,7 +25,7 @@ fn main() {
 
     impl logkit::Plugin for PidPlugin {
         fn post(&self, record: &mut logkit::Record) -> bool {
-            record.append("pid", self.pid);
+            record.append("pid", &self.pid);
             true
         }
     }

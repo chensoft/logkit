@@ -66,6 +66,34 @@ fn fields_msg_format(c: &mut Criterion) {
     }));
 }
 
+fn fields_ten_fields(c: &mut Criterion) {
+    use std::collections::HashMap;
+
+    let logger = logkit::Logger::new();
+    logkit::set_default_logger(logger);
+
+    let timestamp = chrono::Utc::now().timestamp();
+    let mut object: HashMap<&str, &dyn logkit::Encode> = HashMap::new();
+    object.insert("author", &"Jian Chen");
+    object.insert("github", &"https://github.com/chensoft");
+    object.insert("created", &timestamp);
+
+    c.bench_function("fields_ten_fields", |b| b.iter(|| {
+        trace!(
+            string1 = "Alice",
+            string2 = "Bob",
+            int1 = 20,
+            int2 = 22,
+            time1 = 1706098776,
+            time2 = 1706098776,
+            float1 = std::f32::consts::PI,
+            float2 = std::f64::consts::PI,
+            object1 = object,
+            object2 = object
+        );
+    }));
+}
+
 criterion_group!(
     benches,
     empty_log,
@@ -75,5 +103,6 @@ criterion_group!(
     fields_only,
     fields_msg,
     fields_msg_format,
+    fields_ten_fields,
 );
 criterion_main!(benches);
