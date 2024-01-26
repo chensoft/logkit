@@ -151,8 +151,13 @@ pub struct StackPlugin {
 
 impl Plugin for StackPlugin {
     fn post(&self, record: &mut Record) -> bool {
-        if record.level() != self.level || std::env::var("RUST_BACKTRACE").unwrap_or("0".to_string()) == "0" {
+        if record.level() != self.level {
             return true;
+        }
+
+        match std::env::var("RUST_BACKTRACE") {
+            Ok(val) if val != "0" => {}
+            _ => return true,
         }
 
         let mut frames = vec![];

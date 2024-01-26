@@ -18,6 +18,7 @@ static mut DEFAULT_LOGGER: Logger = Logger::new();
 /// logkit::set_default_logger(logger);
 /// ```
 #[inline]
+#[allow(static_mut_ref)]
 pub fn default_logger() -> &'static Logger {
     unsafe { &DEFAULT_LOGGER }
 }
