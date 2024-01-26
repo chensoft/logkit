@@ -52,7 +52,7 @@ Output sample:
 
 ## Benchmark
 
-- MacBook Air, Apple M2 24G, macOS 14.2.1
+- MacBook Air, Apple M2 24G, Sonoma 14.2.1
 
 | Name              |              Time               |
 |:------------------|:-------------------------------:|

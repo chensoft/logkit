@@ -51,6 +51,24 @@ impl Logger {
     /// ```
     ///
     /// ```
+    /// std::env::set_var("RUST_LOG", "trace");
+    /// assert_eq!(logkit::Logger::from_env().level(), logkit::LEVEL_TRACE);
+    ///
+    /// std::env::set_var("RUST_LOG", "debug");
+    /// assert_eq!(logkit::Logger::from_env().level(), logkit::LEVEL_DEBUG);
+    ///
+    /// std::env::set_var("RUST_LOG", "info");
+    /// assert_eq!(logkit::Logger::from_env().level(), logkit::LEVEL_INFO);
+    ///
+    /// std::env::set_var("RUST_LOG", "warn");
+    /// assert_eq!(logkit::Logger::from_env().level(), logkit::LEVEL_WARN);
+    ///
+    /// std::env::set_var("RUST_LOG", "error");
+    /// assert_eq!(logkit::Logger::from_env().level(), logkit::LEVEL_ERROR);
+    ///
+    /// std::env::set_var("RUST_LOG", logkit::LEVEL_INFO.to_string());
+    /// assert_eq!(logkit::Logger::from_env().level(), logkit::LEVEL_INFO);
+    ///
     /// let mut logger = logkit::Logger::from_env();
     /// logger.route(logkit::StderrTarget);
     /// logkit::set_default_logger(logger);
@@ -72,8 +90,7 @@ impl Logger {
     /// records at the `ERROR` level. The output is directed to stderr by default.
     ///
     /// ```
-    /// let logger = logkit::Logger::from_def();
-    /// logkit::set_default_logger(logger);
+    /// logkit::set_default_logger(logkit::Logger::from_def());
     /// ```
     pub fn from_def() -> Self {
         let mut obj = Logger::from_env();
@@ -98,9 +115,7 @@ impl Logger {
     /// ```
     /// let mut logger = logkit::Logger::from_def();
     /// logger.limit(logkit::LEVEL_INFO);
-    /// logkit::set_default_logger(logger);
-    /// 
-    /// assert_eq!(logkit::default_logger().level(), logkit::LEVEL_INFO);
+    /// assert_eq!(logger.level(), logkit::LEVEL_INFO);
     /// ```
     pub fn limit(&mut self, level: Level) -> &mut Self {
         self.level = level;
@@ -112,13 +127,12 @@ impl Logger {
     /// ```
     /// let mut logger = logkit::Logger::from_def();
     /// logger.limit(logkit::LEVEL_INFO);
-    /// logkit::set_default_logger(logger);
-    /// 
-    /// assert_eq!(logkit::default_logger().allow(logkit::LEVEL_TRACE), false);
-    /// assert_eq!(logkit::default_logger().allow(logkit::LEVEL_DEBUG), false);
-    /// assert_eq!(logkit::default_logger().allow(logkit::LEVEL_INFO), true);
-    /// assert_eq!(logkit::default_logger().allow(logkit::LEVEL_WARN), true);
-    /// assert_eq!(logkit::default_logger().allow(logkit::LEVEL_ERROR), true);
+    ///
+    /// assert_eq!(logger.allow(logkit::LEVEL_TRACE), false);
+    /// assert_eq!(logger.allow(logkit::LEVEL_DEBUG), false);
+    /// assert_eq!(logger.allow(logkit::LEVEL_INFO), true);
+    /// assert_eq!(logger.allow(logkit::LEVEL_WARN), true);
+    /// assert_eq!(logger.allow(logkit::LEVEL_ERROR), true);
     /// ```
     #[inline]
     pub fn allow(&self, level: Level) -> bool {
