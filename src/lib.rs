@@ -12,6 +12,8 @@
 //! ```
 //! #[macro_use] extern crate logkit;
 //!
+//! logkit::set_default_logger(logkit::Logger::from_def());
+//! 
 //! trace!(); // outputs just a linebreak
 //! trace!("plain message");
 //! trace!("println-like message {} {}!", "Hello", "World");
@@ -24,25 +26,26 @@
 //!
 //! For ease of use, the crate defines a default logger with some predefined behaviors, such as
 //! printing a level, an RFC3339 milliseconds datetime, capturing a stack trace for the ERROR
-//! level, and outputting messages to stdout by default.
+//! level, and outputting messages to stderr by default.
 //!
 //! To access or modify the default logger, you can use functions as follows:
 //!
 //! ```
 //! #[macro_use] extern crate logkit;
+//! 
+//! let mut logger = logkit::Logger::from_def();
+//! assert_eq!(logger.level(), logkit::LEVEL_TRACE);
+//! 
+//! logger.limit(logkit::LEVEL_INFO);
+//! assert_eq!(logger.level(), logkit::LEVEL_INFO);
+//! 
+//! logkit::set_default_logger(logger);
 //!
-//! debug!("the current log level is {}", logkit::default_logger().read().level);
-//!
-//! logkit::default_logger().write().level = logkit::LEVEL_INFO;
 //! debug!("debug logs are now hidden");
 //! info!("only logs with a level of 'info' or higher will be visible");
 //! ```
 //!
 //! ## Custom Logger
-//!
-//! The default logger is highly customizable, you can unmount all its predefined plugins and unroute
-//! all its targets, making it rarely necessary to create your own logger. However, if you need to
-//! create a custom logger, you can follow the code example below:
 //!
 //! ```
 //! let mut logger = logkit::Logger::new();
@@ -65,10 +68,12 @@
 //! #[macro_export]
 //! macro_rules! custom {
 //!     ($($arg:tt)*) => {{
-//!         logkit::record!(logkit::default_logger().read(), LEVEL_CUSTOM, $($arg)*)
+//!         logkit::record!(logkit::default_logger(), LEVEL_CUSTOM, $($arg)*)
 //!     }};
 //! }
 //!
+//! logkit::set_default_logger(logkit::Logger::from_def());
+//! 
 //! custom!("this is a custom log level");
 //! ```
 //!
@@ -115,7 +120,9 @@
 //!     }
 //! }
 //!
-//! logkit::default_logger().write().mount(PidPlugin {pid: std::process::id()});
+//! let mut logger = logkit::Logger::from_def();
+//! logger.mount(PidPlugin {pid: std::process::id()});
+//! logkit::set_default_logger(logger);
 //!
 //! info!("you will see this log with a process id");
 //! ```
@@ -133,7 +140,9 @@
 //!     }
 //! }
 //!
-//! logkit::default_logger().write().mount(LimitPlugin);
+//! let mut logger = logkit::Logger::from_def();
+//! logger.mount(LimitPlugin);
+//! logkit::set_default_logger(logger);
 //!
 //! debug!("this log is ignored");
 //! info!("you can see this log");
@@ -148,23 +157,24 @@
 //! ```
 //! #[macro_use] extern crate logkit;
 //!
-//! pub struct StderrTarget;
+//! pub struct StdoutTarget;
 //!
-//! impl logkit::Target for StderrTarget {
+//! impl logkit::Target for StdoutTarget {
 //!     #[inline]
 //!     fn write(&self, buf: &[u8]) {
 //!         use std::io::Write;
-//!         let _ = std::io::stderr().write_all(buf);
+//!         let _ = std::io::stdout().write_all(buf);
 //!     }
 //! }
 //!
-//! logkit::default_logger().write().route(StderrTarget);
+//! let mut logger = logkit::Logger::from_def();
+//! logger.route(StdoutTarget);
+//! logkit::set_default_logger(logger);
+//!
 //! info!("record will be output to both stdout and stderr now");
 //! ```
 //!
 //! **Happy Logging!**
-#[macro_use] extern crate lazy_static;
-
 pub mod define;
 pub mod logger;
 pub mod macros;

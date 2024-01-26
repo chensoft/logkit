@@ -65,7 +65,7 @@ impl Record {
     /// assert_eq!(String::from_utf8_lossy(record.buffer().as_slice()), "{\"pid\":12345,\"msg\":\"think outside the box\"}\n");
     /// ```
     #[inline]
-    pub fn append(&mut self, key: &str, val: &impl Encode) -> &mut Self { // todo into
+    pub fn append(&mut self, key: &str, val: &impl Encode) -> &mut Self {
         key.encode(&mut self.cache);
         self.cache.push(b':');
         val.encode(&mut self.cache);

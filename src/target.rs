@@ -56,8 +56,10 @@ impl Target for StderrTarget {
 /// fn main() -> anyhow::Result<()> {
 ///     let mut sample = std::env::temp_dir();
 ///     sample.push("sample.log");
+/// 
 ///     let mut logger = logkit::Logger::new();
 ///     logger.route(logkit::FileTarget::new(sample)?);
+/// 
 ///     Ok(())
 /// }
 /// ```

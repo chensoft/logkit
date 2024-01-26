@@ -1,33 +1,42 @@
 //! Built-in default logger and handy macros
-use super::define::*;
 use super::logger::*;
 
-lazy_static! {
-    static ref DEFAULT_LOGGER: RwLock<Logger> = RwLock::new(Logger::def());
-}
+static mut DEFAULT_LOGGER: Logger = Logger::new();
 
 /// The global default logger
-///
-/// This function provides a read-write lock. A read lock is necessary when spawning or flushing
-/// a record. A write lock is required to change the log level, install a plugin, or add a target.
-/// Be aware that the lock is non-reentrant. If you acquire the write lock, ensure it is released
-/// before attempting to acquire the read lock.
+/// 
+/// Note that this is a no-op logger by default. You must set a valid logger at the beginning of a
+/// program; otherwise, you will not see any log output.
 ///
 /// ```
-/// #[macro_use] extern crate logkit;
-/// info!("current log level is {}", logkit::default_logger().read().level);
-///
-/// logkit::default_logger().write().level = logkit::LEVEL_INFO;
-/// logkit::default_logger().write().route(logkit::StderrTarget);
+/// let mut logger = logkit::Logger::from_def();
+/// assert_eq!(logger.level(), logkit::LEVEL_TRACE);
+/// 
+/// logger.limit(logkit::LEVEL_INFO);
+/// assert_eq!(logger.level(), logkit::LEVEL_INFO);
+/// 
+/// logkit::set_default_logger(logger);
 /// ```
 #[inline]
-pub fn default_logger() -> &'static RwLock<Logger> {
-    &DEFAULT_LOGGER
+pub fn default_logger() -> &'static Logger {
+    unsafe { &DEFAULT_LOGGER }
 }
 
-/// Replace the default logger
+/// Set the default logger
+/// 
+/// # Safety
+/// 
+/// This function is not thread-safe and is typically called at a very early stage of a program,
+/// such as at the beginning of the `main` function.
+/// 
+/// **MAKE SURE NO OTHER THREADS ARE ACCESSING IT.**
+/// 
+/// ```
+/// let logger = logkit::Logger::from_def();
+/// logkit::set_default_logger(logger);
+/// ```
 pub fn set_default_logger(logger: Logger) {
-    *(DEFAULT_LOGGER.write()) = logger;
+    unsafe { DEFAULT_LOGGER = logger; }
 }
 
 /// Trace log
@@ -35,6 +44,8 @@ pub fn set_default_logger(logger: Logger) {
 /// ```
 /// #[macro_use] extern crate logkit;
 ///
+/// logkit::set_default_logger(logkit::Logger::from_def());
+/// 
 /// trace!(); // outputs just a linebreak
 /// trace!("plain message");
 /// trace!("println-like message {} {}!", "Hello", "World");
@@ -45,7 +56,7 @@ pub fn set_default_logger(logger: Logger) {
 #[macro_export]
 macro_rules! trace {
     ($($arg:tt)*) => {{
-        $crate::record!($crate::default_logger().read(), $crate::LEVEL_TRACE, $($arg)*)
+        $crate::record!($crate::default_logger(), $crate::LEVEL_TRACE, $($arg)*)
     }};
 }
 
@@ -54,6 +65,8 @@ macro_rules! trace {
 /// ```
 /// #[macro_use] extern crate logkit;
 ///
+/// logkit::set_default_logger(logkit::Logger::from_def());
+/// 
 /// debug!(); // outputs just a linebreak
 /// debug!("plain message");
 /// debug!("println-like message {} {}!", "Hello", "World");
@@ -64,7 +77,7 @@ macro_rules! trace {
 #[macro_export]
 macro_rules! debug {
     ($($arg:tt)*) => {{
-        $crate::record!($crate::default_logger().read(), $crate::LEVEL_DEBUG, $($arg)*)
+        $crate::record!($crate::default_logger(), $crate::LEVEL_DEBUG, $($arg)*)
     }};
 }
 
@@ -73,6 +86,8 @@ macro_rules! debug {
 /// ```
 /// #[macro_use] extern crate logkit;
 ///
+/// logkit::set_default_logger(logkit::Logger::from_def());
+/// 
 /// info!(); // outputs just a linebreak
 /// info!("plain message");
 /// info!("println-like message {} {}!", "Hello", "World");
@@ -83,7 +98,7 @@ macro_rules! debug {
 #[macro_export]
 macro_rules! info {
     ($($arg:tt)*) => {{
-        $crate::record!($crate::default_logger().read(), $crate::LEVEL_INFO, $($arg)*)
+        $crate::record!($crate::default_logger(), $crate::LEVEL_INFO, $($arg)*)
     }};
 }
 
@@ -92,6 +107,8 @@ macro_rules! info {
 /// ```
 /// #[macro_use] extern crate logkit;
 ///
+/// logkit::set_default_logger(logkit::Logger::from_def());
+/// 
 /// warn!(); // outputs just a linebreak
 /// warn!("plain message");
 /// warn!("println-like message {} {}!", "Hello", "World");
@@ -102,7 +119,7 @@ macro_rules! info {
 #[macro_export]
 macro_rules! warn {
     ($($arg:tt)*) => {{
-        $crate::record!($crate::default_logger().read(), $crate::LEVEL_WARN, $($arg)*)
+        $crate::record!($crate::default_logger(), $crate::LEVEL_WARN, $($arg)*)
     }};
 }
 
@@ -111,6 +128,8 @@ macro_rules! warn {
 /// ```
 /// #[macro_use] extern crate logkit;
 ///
+/// logkit::set_default_logger(logkit::Logger::from_def());
+/// 
 /// error!(); // outputs just a linebreak
 /// error!("plain message");
 /// error!("println-like message {} {}!", "Hello", "World");
@@ -121,7 +140,7 @@ macro_rules! warn {
 #[macro_export]
 macro_rules! error {
     ($($arg:tt)*) => {{
-        $crate::record!($crate::default_logger().read(), $crate::LEVEL_ERROR, $($arg)*)
+        $crate::record!($crate::default_logger(), $crate::LEVEL_ERROR, $($arg)*)
     }};
 }
 
@@ -130,22 +149,24 @@ macro_rules! error {
 /// ```
 /// #[macro_use] extern crate logkit;
 ///
-/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE);
-/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, "I'm ready for adventure!");
-/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, "Hi {}! It's been {} years since our last trip together.", "Alice", 2);
-/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = "Alice", age = 20);
-/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = "Alice", age = 20; "I'm ready for adventure!");
-/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = "Alice", age = 20; "Hi {}! I know, time flies. I've visited {} countries since then.", "Bob", 3);
+/// logkit::set_default_logger(logkit::Logger::from_def());
+/// 
+/// record!(logkit::default_logger(), logkit::LEVEL_TRACE);
+/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, "I'm ready for adventure!");
+/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, "Hi {}! It's been {} years since our last trip together.", "Alice", 2);
+/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, name = "Alice", age = 20);
+/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, name = "Alice", age = 20; "I'm ready for adventure!");
+/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, name = "Alice", age = 20; "Hi {}! I know, time flies. I've visited {} countries since then.", "Bob", 3);
 ///
-/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, "trailing comma", );
-/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, "println-like with trailing comma {} {}!", "Hello", "World", );
-/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = "Alice", age = 20, ); // fields with trailing comma
-/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = "Alice", age = 20; "fields and message with trailing comma", );
-/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = "Alice", age = 20; "println-like with fields and trailing comma {}", "Hello", );
+/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, "trailing comma", );
+/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, "println-like with trailing comma {} {}!", "Hello", "World", );
+/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, name = "Alice", age = 20, ); // fields with trailing comma
+/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, name = "Alice", age = 20; "fields and message with trailing comma", );
+/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, name = "Alice", age = 20; "println-like with fields and trailing comma {}", "Hello", );
 ///
 /// let mut name = "Alice";
-/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = name, age = 10);
-/// record!(logkit::default_logger().read(), logkit::LEVEL_TRACE, name = name, age = 20); // field formatted twice
+/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, name = name, age = 10);
+/// record!(logkit::default_logger(), logkit::LEVEL_TRACE, name = name, age = 20); // field formatted twice
 /// ```
 #[macro_export]
 macro_rules! record {

@@ -4,7 +4,6 @@ pub(crate) use std::io::Write;
 pub(crate) use std::path::Path;
 pub(crate) use std::cell::RefCell;
 pub(crate) use parking_lot::Mutex;
-pub(crate) use parking_lot::RwLock;
 
 /// Log Level
 /// 
@@ -16,10 +15,14 @@ pub(crate) use parking_lot::RwLock;
 /// #[macro_export]
 /// macro_rules! custom {
 ///     ($($arg:tt)*) => {{
-///         logkit::record!(logkit::default_logger().read(), LEVEL_CUSTOM, $($arg)*)
+///         logkit::record!(logkit::default_logger(), LEVEL_CUSTOM, $($arg)*)
 ///     }};
 /// }
 ///
+/// let logger = logkit::Logger::from_def();
+/// assert_eq!(logger.spawn(LEVEL_CUSTOM).unwrap().level(), LEVEL_CUSTOM);
+/// logkit::set_default_logger(logger);
+/// 
 /// custom!("this is a custom log level");
 /// ```
 pub type Level = i32;

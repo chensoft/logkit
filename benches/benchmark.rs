@@ -13,7 +13,7 @@ fn empty_log(c: &mut Criterion) {
 
 fn level_off(c: &mut Criterion) {
     let mut logger = logkit::Logger::new();
-    logger.level = logkit::LEVEL_OFF;
+    logger.limit(logkit::LEVEL_OFF);
     logkit::set_default_logger(logger);
 
     c.bench_function("level_off", |b| b.iter(|| {
