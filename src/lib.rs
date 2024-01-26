@@ -28,8 +28,6 @@
 //! printing a level, an RFC3339 milliseconds datetime, capturing a stack trace for the ERROR
 //! level, and outputting messages to stderr by default.
 //!
-//! To access or modify the default logger, you can use functions as follows:
-//!
 //! ```
 //! #[macro_use] extern crate logkit;
 //! 
