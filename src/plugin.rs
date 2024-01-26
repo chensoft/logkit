@@ -149,6 +149,13 @@ pub struct StackPlugin {
     pub level: Level,
 }
 
+impl StackPlugin {
+    /// Create from level
+    pub fn from_level(level: Level) -> Self {
+        Self {level}
+    }
+}
+
 impl Plugin for StackPlugin {
     fn post(&self, record: &mut Record) -> bool {
         if record.level() != self.level {
@@ -162,6 +169,7 @@ impl Plugin for StackPlugin {
 
         let mut frames = vec![];
 
+        // todo pretty
         backtrace::trace(|frame| {
             backtrace::resolve_frame(frame, |symbol| {
                 if let (Some(funcname), Some(filename), Some(lineno)) = (symbol.name(), symbol.filename(), symbol.lineno()) {

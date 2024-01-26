@@ -3,7 +3,7 @@
 use criterion::*;
 
 fn empty_log(c: &mut Criterion) {
-    let logger = logkit::Logger::new();
+    let logger = logkit::Logger::nop();
     logkit::set_default_logger(logger);
 
     c.bench_function("empty_log", |b| b.iter(|| {
@@ -12,7 +12,7 @@ fn empty_log(c: &mut Criterion) {
 }
 
 fn level_off(c: &mut Criterion) {
-    let mut logger = logkit::Logger::new();
+    let mut logger = logkit::Logger::nop();
     logger.limit(logkit::LEVEL_OFF);
     logkit::set_default_logger(logger);
 
@@ -22,7 +22,7 @@ fn level_off(c: &mut Criterion) {
 }
 
 fn msg_only(c: &mut Criterion) {
-    let logger = logkit::Logger::new();
+    let logger = logkit::Logger::nop();
     logkit::set_default_logger(logger);
 
     c.bench_function("msg_only", |b| b.iter(|| {
@@ -31,7 +31,7 @@ fn msg_only(c: &mut Criterion) {
 }
 
 fn msg_format(c: &mut Criterion) {
-    let logger = logkit::Logger::new();
+    let logger = logkit::Logger::nop();
     logkit::set_default_logger(logger);
 
     c.bench_function("msg_format", |b| b.iter(|| {
@@ -40,7 +40,7 @@ fn msg_format(c: &mut Criterion) {
 }
 
 fn fields_only(c: &mut Criterion) {
-    let logger = logkit::Logger::new();
+    let logger = logkit::Logger::nop();
     logkit::set_default_logger(logger);
 
     c.bench_function("fields_only", |b| b.iter(|| {
@@ -49,7 +49,7 @@ fn fields_only(c: &mut Criterion) {
 }
 
 fn fields_msg(c: &mut Criterion) {
-    let logger = logkit::Logger::new();
+    let logger = logkit::Logger::nop();
     logkit::set_default_logger(logger);
 
     c.bench_function("fields_msg", |b| b.iter(|| {
@@ -58,7 +58,7 @@ fn fields_msg(c: &mut Criterion) {
 }
 
 fn fields_msg_format(c: &mut Criterion) {
-    let logger = logkit::Logger::new();
+    let logger = logkit::Logger::nop();
     logkit::set_default_logger(logger);
 
     c.bench_function("fields_msg_format", |b| b.iter(|| {
@@ -69,7 +69,7 @@ fn fields_msg_format(c: &mut Criterion) {
 fn fields_ten_fields(c: &mut Criterion) {
     use std::collections::HashMap;
 
-    let logger = logkit::Logger::new();
+    let logger = logkit::Logger::nop();
     logkit::set_default_logger(logger);
 
     let timestamp = chrono::Utc::now().timestamp();

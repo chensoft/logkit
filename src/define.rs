@@ -19,10 +19,7 @@ pub(crate) use parking_lot::Mutex;
 ///     }};
 /// }
 ///
-/// let logger = logkit::Logger::from_def();
-/// assert_eq!(logger.spawn(LEVEL_CUSTOM).unwrap().level(), LEVEL_CUSTOM);
-/// logkit::set_default_logger(logger);
-/// 
+/// assert_eq!(logkit::default_logger().spawn(LEVEL_CUSTOM).unwrap().level(), LEVEL_CUSTOM);
 /// custom!("this is a custom log level");
 /// ```
 pub type Level = i32;

@@ -1,40 +1,37 @@
 //! Built-in default logger and handy macros
 use super::logger::*;
+use super::target::*;
 
-static mut DEFAULT_LOGGER: Logger = Logger::new();
+static mut DEFAULT_LOGGER: Logger = Logger::new(Some(&StderrTarget));
 
 /// The global default logger
-/// 
-/// Note that this is a no-op logger by default. You must set a valid logger at the beginning of a
-/// program; otherwise, you will not see any log output.
 ///
-/// ```
-/// let mut logger = logkit::Logger::from_def();
-/// assert_eq!(logger.level(), logkit::LEVEL_TRACE);
-/// 
-/// logger.limit(logkit::LEVEL_INFO);
-/// assert_eq!(logger.level(), logkit::LEVEL_INFO);
-/// 
-/// logkit::set_default_logger(logger);
-/// ```
+/// This logger uses stderr as its default output target.
 #[inline]
 #[allow(static_mut_ref)]
 pub fn default_logger() -> &'static Logger {
     unsafe { &DEFAULT_LOGGER }
 }
 
-/// Set the default logger
-/// 
+/// Replace the default logger
+///
 /// # Safety
-/// 
+///
 /// This function is not thread-safe and is typically called at a very early stage of a program,
 /// such as at the beginning of the `main` function.
-/// 
+///
 /// **MAKE SURE NO OTHER THREADS ARE ACCESSING IT.**
-/// 
+///
 /// ```
-/// let logger = logkit::Logger::from_def();
-/// logkit::set_default_logger(logger);
+/// #[macro_use] extern crate logkit;
+///
+/// fn main() {
+///     // use stdout as the default target
+///     let logger = logkit::Logger::new(Some(&logkit::StdoutTarget));
+///     logkit::set_default_logger(logger);
+///
+///     info!("Hello World!");
+/// }
 /// ```
 pub fn set_default_logger(logger: Logger) {
     unsafe { DEFAULT_LOGGER = logger; }
@@ -45,8 +42,6 @@ pub fn set_default_logger(logger: Logger) {
 /// ```
 /// #[macro_use] extern crate logkit;
 ///
-/// logkit::set_default_logger(logkit::Logger::from_def());
-/// 
 /// trace!(); // outputs just a linebreak
 /// trace!("plain message");
 /// trace!("println-like message {} {}!", "Hello", "World");
@@ -66,8 +61,6 @@ macro_rules! trace {
 /// ```
 /// #[macro_use] extern crate logkit;
 ///
-/// logkit::set_default_logger(logkit::Logger::from_def());
-/// 
 /// debug!(); // outputs just a linebreak
 /// debug!("plain message");
 /// debug!("println-like message {} {}!", "Hello", "World");
@@ -87,8 +80,6 @@ macro_rules! debug {
 /// ```
 /// #[macro_use] extern crate logkit;
 ///
-/// logkit::set_default_logger(logkit::Logger::from_def());
-/// 
 /// info!(); // outputs just a linebreak
 /// info!("plain message");
 /// info!("println-like message {} {}!", "Hello", "World");
@@ -108,8 +99,6 @@ macro_rules! info {
 /// ```
 /// #[macro_use] extern crate logkit;
 ///
-/// logkit::set_default_logger(logkit::Logger::from_def());
-/// 
 /// warn!(); // outputs just a linebreak
 /// warn!("plain message");
 /// warn!("println-like message {} {}!", "Hello", "World");
@@ -129,8 +118,6 @@ macro_rules! warn {
 /// ```
 /// #[macro_use] extern crate logkit;
 ///
-/// logkit::set_default_logger(logkit::Logger::from_def());
-/// 
 /// error!(); // outputs just a linebreak
 /// error!("plain message");
 /// error!("println-like message {} {}!", "Hello", "World");
@@ -150,8 +137,6 @@ macro_rules! error {
 /// ```
 /// #[macro_use] extern crate logkit;
 ///
-/// logkit::set_default_logger(logkit::Logger::from_def());
-/// 
 /// record!(logkit::default_logger(), logkit::LEVEL_TRACE);
 /// record!(logkit::default_logger(), logkit::LEVEL_TRACE, "I'm ready for adventure!");
 /// record!(logkit::default_logger(), logkit::LEVEL_TRACE, "Hi {}! It's been {} years since our last trip together.", "Alice", 2);

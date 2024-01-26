@@ -29,7 +29,9 @@ Super fast, structured, scalable logging library for Rust
 #[macro_use] extern crate logkit;
 
 fn main() {
-    let logger = logkit::Logger::from_def();
+    let mut logger = logkit::Logger::new(Some(&logkit::StdoutTarget));
+    logger.mount(logkit::LevelPlugin);
+    logger.mount(logkit::TimePlugin::from_millis());
     logkit::set_default_logger(logger);
 
     trace!("hello, this is a trace log");
@@ -43,11 +45,11 @@ fn main() {
 Output sample:
 
 ```json
-{"level":"trace","time":"2024-01-25T23:14:24.747+08:00","msg":"hello, this is a trace log"}
-{"level":"debug","time":"2024-01-25T23:14:24.747+08:00","msg":"hello, this is a debug log"}
-{"level":"info","time":"2024-01-25T23:14:24.747+08:00","msg":"this is a log with two string fields","version":"0.1.0","commit":"3291cc60"}
-{"level":"warn","time":"2024-01-25T23:14:24.747+08:00","msg":"this is a log with a string and a numeric field","address":"127.0.0.1","port":3000}
-{"level":"error","time":"2024-01-25T23:14:24.747+08:00","msg":"this is a log with a 'println' style string 127.0.0.1:3000","stack":[{"funcname":"hello_world::main::h62df54cfc9622e64","filename":"/logkit/examples/hello_world.rs","lineno":11}]}
+{"level":"trace","time":"2024-01-26T20:33:01.841+08:00","msg":"hello, this is a trace log"}
+{"level":"debug","time":"2024-01-26T20:33:01.841+08:00","msg":"hello, this is a debug log"}
+{"level":"info","time":"2024-01-26T20:33:01.841+08:00","msg":"this is a log with two string fields","version":"0.1.0","commit":"3291cc60"}
+{"level":"warn","time":"2024-01-26T20:33:01.841+08:00","msg":"this is a log with a string and a numeric field","address":"127.0.0.1","port":3000}
+{"level":"error","time":"2024-01-26T20:33:01.841+08:00","msg":"this is a log with a 'println' style string 127.0.0.1:3000"}
 ```
 
 ## Benchmark

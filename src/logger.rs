@@ -15,90 +15,36 @@ pub struct Logger {
     records: Mutex<RefCell<Vec<Record>>>, // records pool
     plugins: Vec<Box<dyn AnyPlugin>>,     // middlewares
     targets: Vec<Box<dyn AnyTarget>>,     // output targets
+    default: Option<&'static dyn Target>, // default output
 }
 
 impl Logger {
-    /// Create a new clean logger object
+    /// Create a logger with a default static target
+    ///
+    /// Note that the default target can't be deleted.
     ///
     /// ```
-    /// let mut logger = logkit::Logger::new();
-    /// logger.route(logkit::StderrTarget);
+    /// let logger = logkit::Logger::new(Some(&logkit::StderrTarget));
     /// logkit::set_default_logger(logger);
     /// ```
-    pub const fn new() -> Self {
+    pub const fn new(default: Option<&'static dyn Target>) -> Self {
         Self {
             level: LEVEL_TRACE,
             alloc: 512,
             records: Mutex::new(RefCell::new(vec![])),
             plugins: vec![],
             targets: vec![],
+            default,
         }
     }
 
-    /// Create a logger object from env
-    ///
-    /// You can define the env value `RUST_LOG` to control the init log level
-    ///
-    /// ```shell,no_run
-    /// # only allow logs equal to or higher than 'info'
-    /// export RUST_LOG=info
-    ///
-    /// # only allow logs equal to or higher than 'warn'
-    /// export RUST_LOG=warn
-    ///
-    /// # use numeric log level, **not recommended**
-    /// export RUST_LOG=3
-    /// ```
+    /// Create a logger without output target
     ///
     /// ```
-    /// std::env::set_var("RUST_LOG", "trace");
-    /// assert_eq!(logkit::Logger::from_env().level(), logkit::LEVEL_TRACE);
-    ///
-    /// std::env::set_var("RUST_LOG", "debug");
-    /// assert_eq!(logkit::Logger::from_env().level(), logkit::LEVEL_DEBUG);
-    ///
-    /// std::env::set_var("RUST_LOG", "info");
-    /// assert_eq!(logkit::Logger::from_env().level(), logkit::LEVEL_INFO);
-    ///
-    /// std::env::set_var("RUST_LOG", "warn");
-    /// assert_eq!(logkit::Logger::from_env().level(), logkit::LEVEL_WARN);
-    ///
-    /// std::env::set_var("RUST_LOG", "error");
-    /// assert_eq!(logkit::Logger::from_env().level(), logkit::LEVEL_ERROR);
-    ///
-    /// std::env::set_var("RUST_LOG", logkit::LEVEL_INFO.to_string());
-    /// assert_eq!(logkit::Logger::from_env().level(), logkit::LEVEL_INFO);
-    ///
-    /// let mut logger = logkit::Logger::from_env();
-    /// logger.route(logkit::StderrTarget);
-    /// logkit::set_default_logger(logger);
+    /// logkit::set_default_logger(logkit::Logger::nop());
     /// ```
-    pub fn from_env() -> Self {
-        let mut obj = Logger::new();
-        if let Ok(level) = std::env::var("RUST_LOG") {
-            obj.level = match level.parse::<Level>() {
-                Ok(val) => val,
-                Err(_) => str_to_level(level.to_lowercase().as_str()),
-            };
-        }
-        obj
-    }
-
-    /// Create a logger object with some predefined behaviours
-    ///
-    /// This object adds level and time fields to any records and includes a stack trace for
-    /// records at the `ERROR` level. The output is directed to stderr by default.
-    ///
-    /// ```
-    /// logkit::set_default_logger(logkit::Logger::from_def());
-    /// ```
-    pub fn from_def() -> Self {
-        let mut obj = Logger::from_env();
-        obj.mount(LevelPlugin);
-        obj.mount(TimePlugin::from_millis());
-        obj.mount(StackPlugin {level: LEVEL_ERROR});
-        obj.route(StderrTarget);
-        obj
+    pub const fn nop() -> Self {
+        Self::new(None)
     }
 
     /// Get current log level
@@ -113,9 +59,10 @@ impl Logger {
     /// Set current log level
     ///
     /// ```
-    /// let mut logger = logkit::Logger::from_def();
+    /// let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
     /// logger.limit(logkit::LEVEL_INFO);
-    /// assert_eq!(logger.level(), logkit::LEVEL_INFO);
+    /// logkit::set_default_logger(logger);
+    /// assert_eq!(logkit::default_logger().level(), logkit::LEVEL_INFO);
     /// ```
     pub fn limit(&mut self, level: Level) -> &mut Self {
         self.level = level;
@@ -125,14 +72,15 @@ impl Logger {
     /// Check if the log level is equal to or higher than the limit
     ///
     /// ```
-    /// let mut logger = logkit::Logger::from_def();
+    /// let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
     /// logger.limit(logkit::LEVEL_INFO);
+    /// logkit::set_default_logger(logger);
     ///
-    /// assert_eq!(logger.allow(logkit::LEVEL_TRACE), false);
-    /// assert_eq!(logger.allow(logkit::LEVEL_DEBUG), false);
-    /// assert_eq!(logger.allow(logkit::LEVEL_INFO), true);
-    /// assert_eq!(logger.allow(logkit::LEVEL_WARN), true);
-    /// assert_eq!(logger.allow(logkit::LEVEL_ERROR), true);
+    /// assert_eq!(logkit::default_logger().allow(logkit::LEVEL_TRACE), false);
+    /// assert_eq!(logkit::default_logger().allow(logkit::LEVEL_DEBUG), false);
+    /// assert_eq!(logkit::default_logger().allow(logkit::LEVEL_INFO), true);
+    /// assert_eq!(logkit::default_logger().allow(logkit::LEVEL_WARN), true);
+    /// assert_eq!(logkit::default_logger().allow(logkit::LEVEL_ERROR), true);
     /// ```
     #[inline]
     pub fn allow(&self, level: Level) -> bool {
@@ -144,8 +92,10 @@ impl Logger {
     /// A plugin acts as middleware for logs. For more details, refer to `plugin.rs`.
     ///
     /// ```
-    /// let mut logger = logkit::Logger::new();
+    /// let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
     /// logger.mount(logkit::LevelPlugin);
+    /// logger.mount(logkit::TimePlugin::from_millis());
+    /// logkit::set_default_logger(logger);
     /// ```
     pub fn mount(&mut self, plugin: impl Plugin + 'static) -> &mut Self {
         self.plugins.push(Box::new(plugin));
@@ -155,8 +105,10 @@ impl Logger {
     /// Uninstall a plugin
     ///
     /// ```
-    /// let mut logger = logkit::Logger::from_def();
+    /// let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
+    /// logger.mount(logkit::LevelPlugin);
     /// logger.unmount(|t| t.as_any().downcast_ref::<logkit::LevelPlugin>().is_some());
+    /// logkit::set_default_logger(logger);
     /// ```
     pub fn unmount(&mut self, del: impl Fn(&Box<dyn AnyPlugin>) -> bool) -> &mut Self {
         self.plugins.retain(|plugin| !del(plugin));
@@ -168,8 +120,9 @@ impl Logger {
     /// Multiple targets are supported, allowing you to output a single record to various places.
     ///
     /// ```
-    /// let mut logger = logkit::Logger::new();
+    /// let mut logger = logkit::Logger::new(None);
     /// logger.route(logkit::StderrTarget);
+    /// logkit::set_default_logger(logger);
     /// ```
     pub fn route(&mut self, target: impl Target + 'static) -> &mut Self {
         self.targets.push(Box::new(target));
@@ -179,8 +132,10 @@ impl Logger {
     /// Remove a output target
     ///
     /// ```
-    /// let mut logger = logkit::Logger::from_def();
+    /// let mut logger = logkit::Logger::new(None);
+    /// logger.route(logkit::StderrTarget);
     /// logger.unroute(|t| t.as_any().downcast_ref::<logkit::StderrTarget>().is_some());
+    /// logkit::set_default_logger(logger);
     /// ```
     pub fn unroute(&mut self, del: impl Fn(&Box<dyn AnyTarget>) -> bool) -> &mut Self {
         self.targets.retain(|target| !del(target));
@@ -194,9 +149,8 @@ impl Logger {
     /// also treated as a normal field with the key named `msg`.
     ///
     /// ```
-    /// let mut logger = logkit::Logger::new();
-    /// logger.route(logkit::StderrTarget);
-    /// 
+    /// let logger = logkit::Logger::new(Some(&logkit::StderrTarget));
+    ///
     /// if let Some(mut record) = logger.spawn(logkit::LEVEL_TRACE) {
     ///     record.append("hello", &"world");
     ///     record.finish();
@@ -236,10 +190,11 @@ impl Logger {
     /// simply return `false`. Once the `finish` method is invoked, the record will be directed
     /// to all installed targets for output.
     ///
+    /// Note that the default target is always invoked first.
+    ///
     /// ```
-    /// let mut logger = logkit::Logger::new();
-    /// logger.route(logkit::StderrTarget);
-    /// 
+    /// let logger = logkit::Logger::new(Some(&logkit::StderrTarget));
+    ///
     /// if let Some(mut record) = logger.spawn(logkit::LEVEL_TRACE) {
     ///     record.append("msg", &"this log will be directed to stderr");
     ///     logger.flush(record);
@@ -255,6 +210,10 @@ impl Logger {
         }
 
         record.finish();
+
+        if let Some(target) = self.default {
+            target.write(record.buffer());
+        }
 
         for target in &self.targets {
             target.write(record.buffer());

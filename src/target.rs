@@ -20,11 +20,11 @@ impl<T: Target + Any> AnyTarget for T {
     }
 }
 
-/// Output to stdout
+/// Write to stdout
 ///
 /// ```
-/// let mut logger = logkit::Logger::new();
-/// logger.route(logkit::StdoutTarget);
+/// let logger = logkit::Logger::new(Some(&logkit::StdoutTarget));
+/// logkit::set_default_logger(logger);
 /// ```
 pub struct StdoutTarget;
 
@@ -35,11 +35,11 @@ impl Target for StdoutTarget {
     }
 }
 
-/// Output to stderr
+/// Write to stderr
 ///
 /// ```
-/// let mut logger = logkit::Logger::new();
-/// logger.route(logkit::StderrTarget);
+/// let logger = logkit::Logger::new(Some(&logkit::StderrTarget));
+/// logkit::set_default_logger(logger);
 /// ```
 pub struct StderrTarget;
 
@@ -50,16 +50,17 @@ impl Target for StderrTarget {
     }
 }
 
-/// Output to a file
+/// Write to a file
 ///
 /// ```
 /// fn main() -> anyhow::Result<()> {
 ///     let mut sample = std::env::temp_dir();
 ///     sample.push("sample.log");
 /// 
-///     let mut logger = logkit::Logger::new();
+///     let mut logger = logkit::Logger::new(None);
 ///     logger.route(logkit::FileTarget::new(sample)?);
-/// 
+///     logkit::set_default_logger(logger);
+///
 ///     Ok(())
 /// }
 /// ```

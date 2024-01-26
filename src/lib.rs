@@ -12,8 +12,6 @@
 //! ```
 //! #[macro_use] extern crate logkit;
 //!
-//! logkit::set_default_logger(logkit::Logger::from_def());
-//! 
 //! trace!(); // outputs just a linebreak
 //! trace!("plain message");
 //! trace!("println-like message {} {}!", "Hello", "World");
@@ -24,31 +22,22 @@
 //!
 //! ## Default Logger
 //!
-//! For ease of use, the crate defines a default logger with some predefined behaviors, such as
-//! printing a level, an RFC3339 milliseconds datetime, capturing a stack trace for the ERROR
-//! level, and outputting messages to stderr by default.
+//! For convenience, we have defined a default logger that outputs messages to stderr.
 //!
 //! ```
 //! #[macro_use] extern crate logkit;
-//! 
-//! let mut logger = logkit::Logger::from_def();
-//! assert_eq!(logger.level(), logkit::LEVEL_TRACE);
-//! 
-//! logger.limit(logkit::LEVEL_INFO);
-//! assert_eq!(logger.level(), logkit::LEVEL_INFO);
-//! 
-//! logkit::set_default_logger(logger);
 //!
-//! debug!("debug logs are now hidden");
-//! info!("only logs with a level of 'info' or higher will be visible");
+//! assert_eq!(logkit::default_logger().level(), logkit::LEVEL_TRACE);
+//! trace!("hello, this is a trace log");
+//! debug!("hello, this is a debug log");
 //! ```
 //!
 //! ## Custom Logger
 //!
 //! ```
-//! let mut logger = logkit::Logger::new();
-//! logger.mount(logkit::LevelPlugin); // you can define your own plugin
-//! logger.route(logkit::StderrTarget); // and define your custom target
+//! let mut logger = logkit::Logger::new(None);
+//! logger.mount(logkit::LevelPlugin); // you can add your own plugin
+//! logger.route(logkit::StderrTarget); // and add your custom target
 //!
 //! // replace the default logger
 //! logkit::set_default_logger(logger);
@@ -69,8 +58,6 @@
 //!         logkit::record!(logkit::default_logger(), LEVEL_CUSTOM, $($arg)*)
 //!     }};
 //! }
-//!
-//! logkit::set_default_logger(logkit::Logger::from_def());
 //! 
 //! custom!("this is a custom log level");
 //! ```
@@ -118,7 +105,7 @@
 //!     }
 //! }
 //!
-//! let mut logger = logkit::Logger::from_def();
+//! let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
 //! logger.mount(PidPlugin {pid: std::process::id()});
 //! logkit::set_default_logger(logger);
 //!
@@ -138,7 +125,7 @@
 //!     }
 //! }
 //!
-//! let mut logger = logkit::Logger::from_def();
+//! let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
 //! logger.mount(LimitPlugin);
 //! logkit::set_default_logger(logger);
 //!
@@ -155,9 +142,9 @@
 //! ```
 //! #[macro_use] extern crate logkit;
 //!
-//! pub struct StdoutTarget;
+//! pub struct CustomTarget;
 //!
-//! impl logkit::Target for StdoutTarget {
+//! impl logkit::Target for CustomTarget {
 //!     #[inline]
 //!     fn write(&self, buf: &[u8]) {
 //!         use std::io::Write;
@@ -165,11 +152,11 @@
 //!     }
 //! }
 //!
-//! let mut logger = logkit::Logger::from_def();
-//! logger.route(StdoutTarget);
+//! let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
+//! logger.route(CustomTarget);
 //! logkit::set_default_logger(logger);
 //!
-//! info!("record will be output to both stdout and stderr now");
+//! info!("record will be output to both stderr and stdout now");
 //! ```
 //!
 //! **Happy Logging!**

@@ -1,7 +1,9 @@
 #[macro_use] extern crate logkit;
 
 fn main() {
-    let logger = logkit::Logger::from_def();
+    let mut logger = logkit::Logger::new(Some(&logkit::StdoutTarget));
+    logger.mount(logkit::LevelPlugin);
+    logger.mount(logkit::TimePlugin::from_millis());
     logkit::set_default_logger(logger);
 
     trace!("hello, this is a trace log");
