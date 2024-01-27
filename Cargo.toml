@@ -10,6 +10,14 @@ repository = "https://github.com/chensoft/logkit"
 readme = "README.md"
 keywords = ["logkit", "log", "logger", "logging"]
 
+[features]
+default = ["trace", "debug", "info", "warn", "error"]
+trace = []
+debug = []
+info = []
+warn = []
+error = []
+
 [dependencies]
 anyhow = {version = "1.0.79", features = ["backtrace"]}
 chrono = "0.4.31"

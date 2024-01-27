@@ -8,6 +8,7 @@ static mut DEFAULT_LOGGER: Logger = Logger::new(Some(&StderrTarget));
 ///
 /// This logger uses stderr as its default output target.
 #[inline]
+#[allow(unknown_lints)]
 #[allow(static_mut_ref)]
 pub fn default_logger() -> &'static Logger {
     unsafe { &DEFAULT_LOGGER }
@@ -49,10 +50,18 @@ pub fn set_default_logger(logger: Logger) {
 /// trace!(name = "Alice", age = 20; "separate fields and messages with semicolon");
 /// trace!(name = "Alice", age = 20; "println-like message {} {}! with fields", "Hello", "World");
 /// ```
+#[cfg(feature = "trace")]
 #[macro_export]
 macro_rules! trace {
     ($($arg:tt)*) => {{
         $crate::record!($crate::default_logger(), $crate::LEVEL_TRACE, $($arg)*)
+    }};
+}
+
+#[cfg(not(feature = "trace"))]
+#[macro_export]
+macro_rules! trace {
+    ($($arg:tt)*) => {{
     }};
 }
 
@@ -68,10 +77,18 @@ macro_rules! trace {
 /// debug!(name = "Alice", age = 20; "separate fields and messages with semicolon");
 /// debug!(name = "Alice", age = 20; "println-like message {} {}! with fields", "Hello", "World");
 /// ```
+#[cfg(feature = "debug")]
 #[macro_export]
 macro_rules! debug {
     ($($arg:tt)*) => {{
         $crate::record!($crate::default_logger(), $crate::LEVEL_DEBUG, $($arg)*)
+    }};
+}
+
+#[cfg(not(feature = "debug"))]
+#[macro_export]
+macro_rules! debug {
+    ($($arg:tt)*) => {{
     }};
 }
 
@@ -87,10 +104,18 @@ macro_rules! debug {
 /// info!(name = "Alice", age = 20; "separate fields and messages with semicolon");
 /// info!(name = "Alice", age = 20; "println-like message {} {}! with fields", "Hello", "World");
 /// ```
+#[cfg(feature = "info")]
 #[macro_export]
 macro_rules! info {
     ($($arg:tt)*) => {{
         $crate::record!($crate::default_logger(), $crate::LEVEL_INFO, $($arg)*)
+    }};
+}
+
+#[cfg(not(feature = "info"))]
+#[macro_export]
+macro_rules! info {
+    ($($arg:tt)*) => {{
     }};
 }
 
@@ -106,10 +131,18 @@ macro_rules! info {
 /// warn!(name = "Alice", age = 20; "separate fields and messages with semicolon");
 /// warn!(name = "Alice", age = 20; "println-like message {} {}! with fields", "Hello", "World");
 /// ```
+#[cfg(feature = "warn")]
 #[macro_export]
 macro_rules! warn {
     ($($arg:tt)*) => {{
         $crate::record!($crate::default_logger(), $crate::LEVEL_WARN, $($arg)*)
+    }};
+}
+
+#[cfg(not(feature = "warn"))]
+#[macro_export]
+macro_rules! warn {
+    ($($arg:tt)*) => {{
     }};
 }
 
@@ -125,10 +158,18 @@ macro_rules! warn {
 /// error!(name = "Alice", age = 20; "separate fields and messages with semicolon");
 /// error!(name = "Alice", age = 20; "println-like message {} {}! with fields", "Hello", "World");
 /// ```
+#[cfg(feature = "error")]
 #[macro_export]
 macro_rules! error {
     ($($arg:tt)*) => {{
         $crate::record!($crate::default_logger(), $crate::LEVEL_ERROR, $($arg)*)
+    }};
+}
+
+#[cfg(not(feature = "error"))]
+#[macro_export]
+macro_rules! error {
+    ($($arg:tt)*) => {{
     }};
 }
 

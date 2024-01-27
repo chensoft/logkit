@@ -3,7 +3,6 @@
 ### Todo
 
 - predefined fields do not need invoked every time
-- limit level in compile time using features
 - async write support and thread local
 - log rotate by filesize, lineno, daily, hourly...
 - color support in console output
@@ -16,6 +15,7 @@
 
 - a nop constructor for Logger
 - a DiscardTarget for ignoring output
+- features for macros to disable some levels in compile time
 
 ### Changed
 
