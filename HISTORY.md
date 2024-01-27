@@ -9,7 +9,7 @@
 - highlight keywords in console output
 - sampling by level
 
-## [0.3.0] - 2024-01-xx
+## [0.3.0] - 2024-01-27
 
 ### Added
 
