@@ -97,7 +97,7 @@ impl Logger {
     /// logger.mount(logkit::TimePlugin::from_millis());
     /// logkit::set_default_logger(logger);
     /// ```
-    pub fn mount(&mut self, plugin: impl Plugin + 'static) -> &mut Self {
+    pub fn mount(&mut self, plugin: impl Plugin) -> &mut Self {
         self.plugins.push(Box::new(plugin));
         self
     }
@@ -124,7 +124,7 @@ impl Logger {
     /// logger.route(logkit::StderrTarget);
     /// logkit::set_default_logger(logger);
     /// ```
-    pub fn route(&mut self, target: impl Target + 'static) -> &mut Self {
+    pub fn route(&mut self, target: impl Target) -> &mut Self {
         self.targets.push(Box::new(target));
         self
     }

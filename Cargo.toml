@@ -1,6 +1,6 @@
 [package]
 name = "logkit"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
 authors = ["Jian Chen <admin@chensoft.com>"]
 license = "MIT"
@@ -19,14 +19,14 @@ warn = []
 error = []
 
 [dependencies]
-anyhow = {version = "1.0.79", features = ["backtrace"]}
-chrono = "0.4.31"
-encoder = "0.2.2"
-backtrace = "0.3.69"
-parking_lot = "0.12.1"
+anyhow = {version = "1.0", features = ["backtrace"]}
+chrono = "0.4"
+encoder = "0.2"
+backtrace = "0.3"
+parking_lot = "0.12"
 
 [dev-dependencies]
-criterion = "0.5.1"
+criterion = "0.5"
 
 [[bench]]
 name = "benchmark"
