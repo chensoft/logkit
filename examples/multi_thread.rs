@@ -7,9 +7,13 @@ async fn main() {
     logger.mount(logkit::TimePlugin::from_millis());
     logkit::set_default_logger(logger);
 
+    let mut handles = vec![];
+
     for i in 0..100 {
-        tokio::task::spawn(async move {
+        handles.push(tokio::task::spawn(async move {
             trace!("hello, this is a log with index {}", i);
-        });
+        }));
     }
+
+    futures::future::join_all(handles).await;
 }
