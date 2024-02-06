@@ -160,6 +160,9 @@
 //! ```
 //!
 //! **Happy Logging!**
+#![warn(missing_docs)]
+#![deny(clippy::unwrap_used)]
+
 pub mod define;
 pub mod logger;
 pub mod macros;

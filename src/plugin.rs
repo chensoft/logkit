@@ -27,10 +27,12 @@ pub trait Plugin: Sync + Send + 'static {
 
 /// To store arbitrary plugins
 pub trait AnyPlugin: Plugin + Any {
+    /// Treat object as Any
     fn as_any(&self) -> &dyn Any;
 }
 
 impl<T: Plugin + Any> AnyPlugin for T {
+    /// Treat object as Any
     fn as_any(&self) -> &dyn Any {
         self
     }
@@ -57,6 +59,7 @@ impl Plugin for LevelPlugin {
 
 /// Add a rfc3339 datetime string to a record
 pub struct TimePlugin {
+    /// time format
     pub format: chrono::SecondsFormat,
 }
 
@@ -110,9 +113,14 @@ impl Plugin for TimePlugin {
 /// Represent a stack trace frame
 #[derive(Debug, Default, Clone)]
 pub struct StackFrame {
-    pub funcname: String, // function name
-    pub filename: String, // file name
-    pub lineno: u32,      // line number
+    /// function name
+    pub funcname: String,
+
+    /// file name
+    pub filename: String,
+
+    /// line number
+    pub lineno: u32,
 }
 
 impl Encode for StackFrame {
@@ -146,6 +154,7 @@ impl Encode for StackFrame {
 /// {"stack":[{"funcname":"hello_world::main::h95297a3226de826e","filename":"/logkit/examples/hello_world.rs","lineno":9}]}
 /// ```
 pub struct StackPlugin {
+    /// logs equal to this level will include a stack trace
     pub level: Level,
 }
 

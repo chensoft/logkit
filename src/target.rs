@@ -6,15 +6,18 @@ use super::define::*;
 /// After completion, a record is directed to targets, whose purpose is to output the record's
 /// content to various locations. A single record can be associated with multiple targets.
 pub trait Target: Sync + Send + 'static {
+    /// Write logs from buf to target
     fn write(&self, buf: &[u8]);
 }
 
 /// To store arbitrary targets
 pub trait AnyTarget: Target + Any {
+    /// Treat object as Any
     fn as_any(&self) -> &dyn Any;
 }
 
 impl<T: Target + Any> AnyTarget for T {
+    /// Treat object as Any
     fn as_any(&self) -> &dyn Any {
         self
     }
@@ -65,10 +68,12 @@ impl Target for StderrTarget {
 /// }
 /// ```
 pub struct FileTarget {
+    /// file handle
     pub file: Mutex<RefCell<std::fs::File>>,
 }
 
 impl FileTarget {
+    /// Create a FileTarget with a path
     pub fn new(path: impl AsRef<Path>) -> anyhow::Result<Self> {
         Ok(Self {file: Mutex::new(RefCell::new(std::fs::OpenOptions::new().create(true).append(true).open(path)?))})
     }

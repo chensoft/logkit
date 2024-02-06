@@ -24,11 +24,17 @@ pub(crate) use parking_lot::Mutex;
 /// ```
 pub type Level = i32;
 
+/// Level Trace
 pub const LEVEL_TRACE : Level = 0;
+/// Level Debug
 pub const LEVEL_DEBUG : Level = 1;
+/// Level Info
 pub const LEVEL_INFO  : Level = 2;
+/// Level Warn
 pub const LEVEL_WARN  : Level = 3;
+/// Level Error
 pub const LEVEL_ERROR : Level = 4;
+/// Level Off
 pub const LEVEL_OFF   : Level = i32::MAX;
 
 /// Level to string
