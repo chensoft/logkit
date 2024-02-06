@@ -161,7 +161,7 @@
 //!
 //! **Happy Logging!**
 #![warn(missing_docs)]
-#![deny(clippy::unwrap_used, clippy::expect_used)]
+#![deny(clippy::unwrap_used, clippy::expect_used, clippy::let_underscore_future)]
 
 pub mod define;
 pub mod logger;
