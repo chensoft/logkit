@@ -13,8 +13,8 @@ pub struct Logger {
     alloc: usize, // record init capacity
 
     records: Mutex<RefCell<Vec<Record>>>, // records pool
-    plugins: Vec<Box<dyn AnyPlugin>>,     // middlewares
-    targets: Vec<Box<dyn AnyTarget>>,     // output targets
+    plugins: Vec<Box<dyn Plugin>>,        // middlewares
+    targets: Vec<Box<dyn Target>>,        // output targets
     default: Option<&'static dyn Target>, // default output
 }
 
@@ -105,12 +105,14 @@ impl Logger {
     /// Uninstall a plugin
     ///
     /// ```
+    /// use std::any::Any;
+    /// 
     /// let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
     /// logger.mount(logkit::LevelPlugin);
-    /// logger.unmount(|t| t.as_any().downcast_ref::<logkit::LevelPlugin>().is_some());
+    /// logger.unmount(|t| (t as &dyn Any).downcast_ref::<logkit::LevelPlugin>().is_some());
     /// logkit::set_default_logger(logger);
     /// ```
-    pub fn unmount(&mut self, del: impl Fn(&Box<dyn AnyPlugin>) -> bool) -> &mut Self {
+    pub fn unmount(&mut self, del: impl Fn(&Box<dyn Plugin>) -> bool) -> &mut Self {
         self.plugins.retain(|plugin| !del(plugin));
         self
     }
@@ -132,12 +134,14 @@ impl Logger {
     /// Remove a output target
     ///
     /// ```
+    /// use std::any::Any;
+    /// 
     /// let mut logger = logkit::Logger::new(None);
     /// logger.route(logkit::StderrTarget);
-    /// logger.unroute(|t| t.as_any().downcast_ref::<logkit::StderrTarget>().is_some());
+    /// logger.unroute(|t| (t as &dyn Any).downcast_ref::<logkit::StderrTarget>().is_some());
     /// logkit::set_default_logger(logger);
     /// ```
-    pub fn unroute(&mut self, del: impl Fn(&Box<dyn AnyTarget>) -> bool) -> &mut Self {
+    pub fn unroute(&mut self, del: impl Fn(&Box<dyn Target>) -> bool) -> &mut Self {
         self.targets.retain(|target| !del(target));
         self
     }
