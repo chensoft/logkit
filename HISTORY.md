@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Added
+
+- get logger's plugins and targets
+
 ### Todo
 
 - predefined fields do not need invoked every time

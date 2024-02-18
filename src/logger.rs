@@ -105,16 +105,28 @@ impl Logger {
     /// Uninstall a plugin
     ///
     /// ```
-    /// use std::any::Any;
-    /// 
     /// let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
     /// logger.mount(logkit::LevelPlugin);
-    /// logger.unmount(|t| (t as &dyn Any).downcast_ref::<logkit::LevelPlugin>().is_some());
+    /// logger.unmount(|t| t.as_any().downcast_ref::<logkit::LevelPlugin>().is_some());
     /// logkit::set_default_logger(logger);
     /// ```
-    pub fn unmount(&mut self, del: impl Fn(&Box<dyn Plugin>) -> bool) -> &mut Self {
-        self.plugins.retain(|plugin| !del(plugin));
+    pub fn unmount(&mut self, del: impl Fn(&dyn Plugin) -> bool) -> &mut Self {
+        self.plugins.retain(|plugin| !del(plugin.as_ref()));
         self
+    }
+
+    /// Get all plugins
+    ///
+    /// ```
+    /// let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
+    /// logger.mount(logkit::LevelPlugin);
+    /// assert_eq!(logger.plugins().len(), 1);
+    ///
+    /// logger.unmount(|t| t.as_any().downcast_ref::<logkit::LevelPlugin>().is_some());
+    /// assert_eq!(logger.plugins().len(), 0);
+    /// ```
+    pub fn plugins(&self) -> &Vec<Box<dyn Plugin>> {
+        &self.plugins
     }
 
     /// Add a output target for records
@@ -134,16 +146,30 @@ impl Logger {
     /// Remove a output target
     ///
     /// ```
-    /// use std::any::Any;
-    /// 
     /// let mut logger = logkit::Logger::new(None);
     /// logger.route(logkit::StderrTarget);
-    /// logger.unroute(|t| (t as &dyn Any).downcast_ref::<logkit::StderrTarget>().is_some());
+    /// logger.unroute(|t| t.as_any().downcast_ref::<logkit::StderrTarget>().is_some());
     /// logkit::set_default_logger(logger);
     /// ```
-    pub fn unroute(&mut self, del: impl Fn(&Box<dyn Target>) -> bool) -> &mut Self {
-        self.targets.retain(|target| !del(target));
+    pub fn unroute(&mut self, del: impl Fn(&dyn Target) -> bool) -> &mut Self {
+        self.targets.retain(|target| !del(target.as_ref()));
         self
+    }
+
+    /// Get all targets, except default target
+    ///
+    /// ```
+    /// let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
+    /// assert_eq!(logger.targets().len(), 0); // no default target
+    ///
+    /// logger.route(logkit::StdoutTarget);
+    /// assert_eq!(logger.targets().len(), 1);
+    ///
+    /// logger.unroute(|t| t.as_any().downcast_ref::<logkit::StdoutTarget>().is_some());
+    /// assert_eq!(logger.targets().len(), 0);
+    /// ```
+    pub fn targets(&self) -> &Vec<Box<dyn Target>> {
+        &self.targets
     }
 
     /// Create a new log record

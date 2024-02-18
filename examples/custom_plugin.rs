@@ -1,7 +1,5 @@
 #[macro_use] extern crate logkit;
 
-use std::any::Any;
-
 fn main() {
     // show the stack trace
     let mut logger = logkit::Logger::new(Some(&logkit::StdoutTarget));
@@ -14,7 +12,7 @@ fn main() {
     // remove the stack plugin
     let mut logger = logkit::Logger::new(Some(&logkit::StdoutTarget));
     logger.mount(logkit::StackPlugin::from_level(logkit::LEVEL_ERROR));
-    logger.unmount(|t| (t as &dyn Any).downcast_ref::<logkit::StackPlugin>().is_some());
+    logger.unmount(|t| t.as_any().downcast_ref::<logkit::StackPlugin>().is_some());
     logkit::set_default_logger(logger);
 
     error!("stack trace printing feature has been disabled");
