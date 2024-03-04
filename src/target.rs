@@ -46,7 +46,7 @@ impl Target for StderrTarget {
 /// fn main() -> anyhow::Result<()> {
 ///     let mut sample = std::env::temp_dir();
 ///     sample.push("sample.log");
-/// 
+///
 ///     let mut logger = logkit::Logger::new(None);
 ///     logger.route(logkit::FileTarget::new(sample)?);
 ///     logkit::set_default_logger(logger);
@@ -62,6 +62,10 @@ pub struct FileTarget {
 impl FileTarget {
     /// Create a FileTarget with a path
     pub fn new(path: impl AsRef<Path>) -> anyhow::Result<Self> {
+        if let Some(dir) = path.as_ref().parent() {
+            std::fs::create_dir_all(dir)?;
+        }
+
         Ok(Self {file: Mutex::new(RefCell::new(std::fs::OpenOptions::new().create(true).append(true).open(path)?))})
     }
 }

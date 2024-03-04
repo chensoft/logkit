@@ -3,6 +3,7 @@
 ### Added
 
 - get logger's plugins and targets
+- create directory in FileTarget
 
 ### Todo
 
