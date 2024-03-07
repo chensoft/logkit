@@ -1,10 +1,15 @@
 #[macro_use] extern crate logkit;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     let mut logger = logkit::Logger::new(Some(&logkit::StdoutTarget));
     logger.mount(logkit::LevelPlugin);
     logger.mount(logkit::TimePlugin::from_millis());
+
+    let mut sample = std::env::temp_dir();
+    sample.push("sample.log");
+    logger.route(logkit::FileTarget::new(sample)?);
+
     logkit::set_default_logger(logger);
 
     let mut handles = vec![];
@@ -16,4 +21,6 @@ async fn main() {
     }
 
     futures::future::join_all(handles).await;
+
+    Ok(())
 }

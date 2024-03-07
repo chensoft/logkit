@@ -56,7 +56,7 @@ impl Target for StderrTarget {
 /// ```
 pub struct FileTarget {
     /// file handle
-    pub file: Mutex<RefCell<std::fs::File>>,
+    pub file: ReentrantMutex<RefCell<std::fs::File>>,
 }
 
 impl FileTarget {
@@ -66,7 +66,7 @@ impl FileTarget {
             std::fs::create_dir_all(dir)?;
         }
 
-        Ok(Self {file: Mutex::new(RefCell::new(std::fs::OpenOptions::new().create(true).append(true).open(path)?))})
+        Ok(Self {file: ReentrantMutex::new(RefCell::new(std::fs::OpenOptions::new().create(true).append(true).open(path)?))})
     }
 }
 
@@ -74,6 +74,9 @@ impl Target for FileTarget {
     #[inline]
     fn write(&self, buf: &[u8]) {
         let file = self.file.lock();
-        let _ = file.borrow_mut().write_all(buf);
+        match file.borrow_mut().write_all(buf) {
+            Ok(_) => {}
+            Err(err) => { let _ = std::io::stderr().write_all(format!("Error: {}", err).as_bytes()); }
+        };
     }
 }

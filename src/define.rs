@@ -3,6 +3,7 @@ pub(crate) use std::io::Write;
 pub(crate) use std::path::Path;
 pub(crate) use std::cell::RefCell;
 pub(crate) use parking_lot::Mutex;
+pub(crate) use parking_lot::ReentrantMutex;
 
 /// Any support
 pub trait Any: std::any::Any {

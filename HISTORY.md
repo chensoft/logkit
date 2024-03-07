@@ -1,10 +1,3 @@
-## [Unreleased]
-
-### Added
-
-- get logger's plugins and targets
-- create directory in FileTarget
-
 ### Todo
 
 - predefined fields do not need invoked every time
@@ -13,6 +6,17 @@
 - color support in console output
 - highlight keywords in console output
 - sampling by level
+
+## [0.3.2] - 2024-03-07
+
+### Added
+
+- Retrieve logger's plugins and targets
+- Automatically create the directory in FileTarget
+
+### Changed
+
+- Print an error message if writing to the file fails
 
 ## [0.3.1] - 2024-02-02
 
