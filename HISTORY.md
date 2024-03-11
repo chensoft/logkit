@@ -12,6 +12,7 @@
 ### Changed
 
 - Remove the parking_lot dependency
+- Relax the requirements for Plugin and Target
 
 ## [0.3.2] - 2024-03-07
 
