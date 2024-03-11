@@ -23,7 +23,6 @@ anyhow = { version = "1.0", features = ["backtrace"] }
 chrono = "0.4"
 encoder = "0.2"
 backtrace = "0.3"
-parking_lot = "0.12"
 
 [dev-dependencies]
 tokio = { version = "1.36", features = ["full"] }

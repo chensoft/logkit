@@ -7,6 +7,12 @@
 - highlight keywords in console output
 - sampling by level
 
+## [Unreleased] - 2024-xx-xx
+
+### Changed
+
+- Remove the parking_lot dependency
+
 ## [0.3.2] - 2024-03-07
 
 ### Added

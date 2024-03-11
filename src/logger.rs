@@ -12,7 +12,7 @@ pub struct Logger {
     level: Level, // log level limit
     alloc: usize, // record init capacity
 
-    records: Mutex<RefCell<Vec<Record>>>, // records pool
+    records: Mutex<Vec<Record>>,          // records pool
     plugins: Vec<Box<dyn Plugin>>,        // middlewares
     targets: Vec<Box<dyn Target>>,        // output targets
     default: Option<&'static dyn Target>, // default output
@@ -31,7 +31,7 @@ impl Logger {
         Self {
             level: LEVEL_TRACE,
             alloc: 512,
-            records: Mutex::new(RefCell::new(vec![])),
+            records: Mutex::new(vec![]),
             plugins: vec![],
             targets: vec![],
             default,
@@ -193,10 +193,9 @@ impl Logger {
             return None;
         }
 
-        let record = {
-            let guard = self.records.lock();
-            let mut array = guard.borrow_mut();
-            array.pop()
+        let record = match self.records.lock() {
+            Ok(mut obj) => obj.pop(),
+            Err(_) => return None
         };
 
         let mut record = match record {
@@ -258,7 +257,8 @@ impl Logger {
     /// invoke it manually.
     #[inline]
     pub fn reuse(&self, record: Record) {
-        let guard = self.records.lock();
-        guard.borrow_mut().push(record);
+        if let Ok(mut obj) = self.records.lock() {
+            obj.push(record)
+        }
     }
 }
