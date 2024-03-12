@@ -11,8 +11,13 @@
 
 ### Changed
 
-- Remove the parking_lot dependency
 - Relax the requirements for Plugin and Target
+- Add separate any trait for Plugin and Target
+
+### Removed
+
+- The parking_lot dependency
+- Do not pub Any to avoid conflict
 
 ## [0.3.2] - 2024-03-07
 

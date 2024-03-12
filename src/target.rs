@@ -5,9 +5,22 @@ use super::define::*;
 ///
 /// After completion, a record is directed to targets, whose purpose is to output the record's
 /// content to various locations. A single record can be associated with multiple targets.
-pub trait Target: Any + 'static {
+pub trait Target: AnyTarget + 'static {
     /// Write logs from buf to target
     fn write(&self, buf: &[u8]);
+}
+
+/// Any Support
+pub trait AnyTarget: Any {
+    /// Treat object as any
+    fn as_any(&self) -> &dyn Any;
+}
+
+impl<T: Any> AnyTarget for T {
+    #[inline]
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
 }
 
 /// Write to stdout

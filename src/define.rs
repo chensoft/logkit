@@ -1,20 +1,8 @@
 //! Log levels and Encode trait
+pub(crate) use std::any::Any;
 pub(crate) use std::io::Write;
 pub(crate) use std::path::Path;
 pub(crate) use std::sync::Mutex;
-
-/// Any support
-pub trait Any: std::any::Any {
-    /// Treat object as any
-    fn as_any(&self) -> &dyn std::any::Any;
-}
-
-impl<T: std::any::Any> Any for T {
-    #[inline]
-    fn as_any(&self) -> &dyn std::any::Any {
-        self
-    }
-}
 
 /// Log Level
 /// 

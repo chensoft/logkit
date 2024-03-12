@@ -9,7 +9,7 @@ use super::record::*;
 ///
 /// You can terminate the log processing in advance, simply return `false` in `pre` or `post`.
 #[allow(unused_variables)]
-pub trait Plugin: Any + 'static {
+pub trait Plugin: AnyPlugin + 'static {
     /// Invoked before the `msg` field is appended to a record
     #[inline]
     #[must_use]
@@ -22,6 +22,19 @@ pub trait Plugin: Any + 'static {
     #[must_use]
     fn post(&self, record: &mut Record) -> bool {
         true
+    }
+}
+
+/// Any Support
+pub trait AnyPlugin: Any {
+    /// Treat object as any
+    fn as_any(&self) -> &dyn Any;
+}
+
+impl<T: Any> AnyPlugin for T {
+    #[inline]
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 
