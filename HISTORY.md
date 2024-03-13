@@ -7,6 +7,12 @@
 - highlight keywords in console output
 - sampling by level
 
+## [0.3.4] - 2024-03-13
+
+### Added
+
+- Add Send and Sync requirements for Plugin and Target
+
 ## [0.3.3] - 2024-03-13
 
 ### Changed

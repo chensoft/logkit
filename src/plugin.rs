@@ -9,7 +9,7 @@ use super::record::*;
 ///
 /// You can terminate the log processing in advance, simply return `false` in `pre` or `post`.
 #[allow(unused_variables)]
-pub trait Plugin: AnyPlugin + 'static {
+pub trait Plugin: AnyPlugin + Send + Sync + 'static {
     /// Invoked before the `msg` field is appended to a record
     #[inline]
     #[must_use]
