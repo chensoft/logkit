@@ -7,7 +7,7 @@
 - highlight keywords in console output
 - sampling by level
 
-## [Unreleased] - 2024-xx-xx
+## [0.3.3] - 2024-03-13
 
 ### Changed
 
