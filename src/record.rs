@@ -1,5 +1,6 @@
 //! Record represent a single log entry
 use super::define::*;
+use super::source::*;
 
 /// Log Record
 ///
@@ -11,6 +12,7 @@ use super::define::*;
 pub struct Record {
     level: Level,
     cache: Vec<u8>,
+    source: Source,
 }
 
 impl Record {
@@ -19,12 +21,12 @@ impl Record {
     /// The `capacity` argument specifies the initial capacity of the buffer.
     ///
     /// ```
-    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512);
+    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512, logkit::Source::new(file!(), line!(), column!()));
     /// assert_eq!(record.level(), logkit::LEVEL_TRACE);
     /// ```
     #[inline]
-    pub fn new(level: Level, capacity: usize) -> Self {
-        let mut obj = Self {level, cache: Vec::with_capacity(capacity)};
+    pub fn new(level: Level, capacity: usize, source: Source) -> Self {
+        let mut obj = Self {level, cache: Vec::with_capacity(capacity), source};
         obj.cache.push(b'{');
         obj
     }
@@ -32,16 +34,19 @@ impl Record {
     /// Reset record for reuse
     ///
     /// ```
-    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512);
+    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512, logkit::Source::new(file!(), line!(), column!()));
     /// assert_eq!(record.level(), logkit::LEVEL_TRACE);
     ///
-    /// record = logkit::Record::set(record, logkit::LEVEL_ERROR);
+    /// record = logkit::Record::set(record, logkit::LEVEL_ERROR, file!(), line!(), column!());
     /// assert_eq!(record.level(), logkit::LEVEL_ERROR);
     /// ```
     #[inline]
-    pub fn set(mut record: Record, level: Level) -> Self {
+    pub fn set(mut record: Record, level: Level, file: &'static str, line: u32, column: u32) -> Self {
         record.level = level;
         record.cache.truncate(1); // preserve '{'
+        record.source.file = file;
+        record.source.line = line;
+        record.source.column = column;
         record
     }
 
@@ -51,6 +56,12 @@ impl Record {
         self.level
     }
 
+    /// Current record's source info
+    #[inline]
+    pub fn source(&self) -> &Source {
+        &self.source
+    }
+
     /// Append field's key and value to record
     ///
     /// The order of fields is fixed, fields are stored in the order they are added.
@@ -58,7 +69,7 @@ impl Record {
     /// Note that duplicate fields are not filtered out.
     ///
     /// ```
-    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512);
+    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512, logkit::Source::new(file!(), line!(), column!()));
     /// record.append("pid", &12345);
     /// record.append("msg", &"think outside the box");
     /// record.finish();
@@ -76,7 +87,7 @@ impl Record {
     /// Mark the end of the record
     ///
     /// ```
-    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512);
+    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512, logkit::Source::new(file!(), line!(), column!()));
     /// record.finish();
     /// assert_eq!(String::from_utf8_lossy(record.buffer().as_slice()), "{}\n");
     /// ```
@@ -93,7 +104,7 @@ impl Record {
     /// Get the final buffer
     ///
     /// ```
-    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512);
+    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512, logkit::Source::new(file!(), line!(), column!()));
     /// record.append("msg", &"less is more");
     /// record.finish();
     /// assert_eq!(String::from_utf8_lossy(record.buffer().as_slice()), "{\"msg\":\"less is more\"}\n");

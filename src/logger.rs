@@ -1,6 +1,7 @@
 //! The central struct designed for managing logging tasks
 use super::define::*;
 use super::record::*;
+use super::source::*;
 use super::plugin::*;
 use super::target::*;
 
@@ -181,14 +182,14 @@ impl Logger {
     /// ```
     /// let logger = logkit::Logger::new(Some(&logkit::StderrTarget));
     ///
-    /// if let Some(mut record) = logger.spawn(logkit::LEVEL_TRACE) {
+    /// if let Some(mut record) = logger.spawn(logkit::LEVEL_TRACE, file!(), line!(), column!()) {
     ///     record.append("hello", &"world");
     ///     record.finish();
     ///     assert_eq!(String::from_utf8_lossy(record.buffer().as_slice()), "{\"hello\":\"world\"}\n")
     /// }
     /// ```
     #[inline]
-    pub fn spawn(&self, level: Level) -> Option<Record> {
+    pub fn spawn(&self, level: Level, file: &'static str, line: u32, column: u32) -> Option<Record> {
         if !self.allow(level) {
             return None;
         }
@@ -199,8 +200,8 @@ impl Logger {
         };
 
         let mut record = match record {
-            None => Record::new(level, self.alloc),
-            Some(val) => Record::set(val, level),
+            None => Record::new(level, self.alloc, Source::new(file, line, column)),
+            Some(val) => Record::set(val, level, file, line, column),
         };
 
         for plugin in &self.plugins {
@@ -224,7 +225,7 @@ impl Logger {
     /// ```
     /// let logger = logkit::Logger::new(Some(&logkit::StderrTarget));
     ///
-    /// if let Some(mut record) = logger.spawn(logkit::LEVEL_TRACE) {
+    /// if let Some(mut record) = logger.spawn(logkit::LEVEL_TRACE, file!(), line!(), column!()) {
     ///     record.append("msg", &"this log will be directed to stderr");
     ///     logger.flush(record);
     /// }

@@ -1,4 +1,4 @@
-### Todo
+## Todo
 
 - predefined fields do not need invoked every time
 - async write support and thread local
@@ -6,6 +6,12 @@
 - color support in console output
 - highlight keywords in console output
 - sampling by level
+
+## [Unreleased] - 2024-0x-xx
+
+### Added
+
+- Save the source info when the user calls the macros
 
 ## [0.3.4] - 2024-03-13
 

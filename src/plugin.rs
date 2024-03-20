@@ -110,6 +110,21 @@ impl Plugin for TimePlugin {
     }
 }
 
+/// Add source info to a record
+///
+/// ```json,no_run
+/// {"src":"examples/hello_world.rs:9"}
+/// ```
+pub struct SourcePlugin;
+
+impl Plugin for SourcePlugin {
+    #[inline]
+    fn post(&self, record: &mut Record) -> bool {
+        record.append("src", &format!("{}:{}", record.source().file, record.source().line));
+        true
+    }
+}
+
 /// Represent a stack trace frame
 #[derive(Debug, Default, Clone)]
 pub struct StackFrame {

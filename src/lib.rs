@@ -168,6 +168,7 @@ pub mod logger;
 pub mod macros;
 pub mod plugin;
 pub mod record;
+pub mod source;
 pub mod target;
 
 #[doc(inline)]
@@ -180,5 +181,7 @@ pub use macros::*;
 pub use plugin::*;
 #[doc(hidden)]
 pub use record::*;
+#[doc(hidden)]
+pub use source::*;
 #[doc(hidden)]
 pub use target::*;
