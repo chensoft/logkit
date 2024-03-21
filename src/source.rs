@@ -15,17 +15,17 @@ pub struct Source {
     pub column: u32,
 }
 
-impl Source {
-    /// Create a new source info
-    ///
-    /// ```
-    /// let mut source = logkit::Source::new(file!(), line!(), column!());
-    /// assert_eq!(source.file, "src/source.rs");
-    /// assert!(source.line > 0);
-    /// assert!(source.column > 0);
-    /// ```
-    #[inline]
-    pub fn new(file: &'static str, line: u32, column: u32) -> Self {
-        Self {file, line, column}
-    }
+/// Create a new source info
+///
+/// ```
+/// let mut source = logkit::source!();
+/// assert!(source.file == "src/source.rs" || source.file == "src\\source.rs");
+/// assert!(source.line > 0);
+/// assert!(source.column > 0);
+/// ```
+#[macro_export]
+macro_rules! source {
+    () => {{
+        $crate::Source { file: file!(), line: line!(), column: column!() }
+    }};
 }

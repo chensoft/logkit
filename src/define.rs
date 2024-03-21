@@ -18,7 +18,7 @@ pub(crate) use std::sync::Mutex;
 ///     }};
 /// }
 ///
-/// assert_eq!(logkit::default_logger().spawn(LEVEL_CUSTOM, file!(), line!(), column!()).unwrap().level(), LEVEL_CUSTOM);
+/// assert_eq!(logkit::default_logger().spawn(LEVEL_CUSTOM, logkit::source!()).unwrap().level(), LEVEL_CUSTOM);
 /// custom!("this is a custom log level");
 /// ```
 pub type Level = i32;

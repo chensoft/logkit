@@ -182,14 +182,14 @@ impl Logger {
     /// ```
     /// let logger = logkit::Logger::new(Some(&logkit::StderrTarget));
     ///
-    /// if let Some(mut record) = logger.spawn(logkit::LEVEL_TRACE, file!(), line!(), column!()) {
+    /// if let Some(mut record) = logger.spawn(logkit::LEVEL_TRACE, logkit::source!()) {
     ///     record.append("hello", &"world");
     ///     record.finish();
     ///     assert_eq!(String::from_utf8_lossy(record.buffer().as_slice()), "{\"hello\":\"world\"}\n")
     /// }
     /// ```
     #[inline]
-    pub fn spawn(&self, level: Level, file: &'static str, line: u32, column: u32) -> Option<Record> {
+    pub fn spawn(&self, level: Level, source: Source) -> Option<Record> {
         if !self.allow(level) {
             return None;
         }
@@ -200,8 +200,8 @@ impl Logger {
         };
 
         let mut record = match record {
-            None => Record::new(level, self.alloc, Source::new(file, line, column)),
-            Some(val) => Record::set(val, level, file, line, column),
+            None => Record::new(level, self.alloc, source),
+            Some(val) => Record::set(val, level, source),
         };
 
         for plugin in &self.plugins {
@@ -225,7 +225,7 @@ impl Logger {
     /// ```
     /// let logger = logkit::Logger::new(Some(&logkit::StderrTarget));
     ///
-    /// if let Some(mut record) = logger.spawn(logkit::LEVEL_TRACE, file!(), line!(), column!()) {
+    /// if let Some(mut record) = logger.spawn(logkit::LEVEL_TRACE, logkit::source!()) {
     ///     record.append("msg", &"this log will be directed to stderr");
     ///     logger.flush(record);
     /// }
