@@ -10,7 +10,7 @@ use super::target::*;
 /// Responsible for setting the log level, spawning log records, and managing plugins, targets,
 /// and all other logging functionalities.
 pub struct Logger {
-    level: Level, // log level limit
+    level: Level, // log level filter
     alloc: usize, // record init capacity
 
     records: Mutex<Vec<Record>>,          // records pool
@@ -53,6 +53,7 @@ impl Logger {
     /// ```
     /// assert_eq!(logkit::default_logger().level(), logkit::LEVEL_TRACE);
     /// ```
+    #[inline]
     pub fn level(&self) -> Level {
         self.level
     }
@@ -74,7 +75,7 @@ impl Logger {
     ///
     /// ```
     /// let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
-    /// logger.limit(logkit::LEVEL_INFO);
+    /// logger.set_level(logkit::LEVEL_INFO);
     /// logkit::set_default_logger(logger);
     ///
     /// assert_eq!(logkit::default_logger().allow(logkit::LEVEL_TRACE), false);
@@ -86,6 +87,20 @@ impl Logger {
     #[inline]
     pub fn allow(&self, level: Level) -> bool {
         level >= self.level
+    }
+
+    /// Set the init capacity of a record and return the old value
+    ///
+    /// ```
+    /// let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
+    /// logger.cache(256);
+    /// assert_eq!(logger.alloc(512), 256);
+    /// ```
+    #[inline]
+    pub fn cache(&mut self, val: usize) -> usize {
+        let old = self.alloc;
+        self.alloc = val;
+        old
     }
 
     /// Install a plugin for records
