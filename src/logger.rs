@@ -75,7 +75,7 @@ impl Logger {
     ///
     /// ```
     /// let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
-    /// logger.set_level(logkit::LEVEL_INFO);
+    /// logger.limit(logkit::LEVEL_INFO);
     /// logkit::set_default_logger(logger);
     ///
     /// assert_eq!(logkit::default_logger().allow(logkit::LEVEL_TRACE), false);
@@ -94,7 +94,7 @@ impl Logger {
     /// ```
     /// let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
     /// logger.cache(256);
-    /// assert_eq!(logger.alloc(512), 256);
+    /// assert_eq!(logger.cache(512), 256);
     /// ```
     #[inline]
     pub fn cache(&mut self, val: usize) -> usize {

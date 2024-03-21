@@ -3,7 +3,7 @@
 /// Source Info
 ///
 /// Save the source info when the user calls the macros.
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct Source {
     /// File name in which it was invoked
     pub file: &'static str,
