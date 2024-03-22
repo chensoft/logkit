@@ -58,27 +58,27 @@ Output sample:
 
 | Name              |              Time               |
 |:------------------|:-------------------------------:|
-| empty_log         | [16.576 ns 16.598 ns 16.622 ns] |
-| level_off         | [1.1781 ns 1.1791 ns 1.1803 ns] |
-| msg_only          | [53.629 ns 53.742 ns 53.868 ns] |
-| msg_format        | [53.707 ns 53.790 ns 53.888 ns] |
-| fields_only       | [90.106 ns 90.141 ns 90.175 ns] |
-| fields_msg        | [136.68 ns 136.72 ns 136.76 ns] |
-| fields_msg_format | [138.01 ns 138.62 ns 139.37 ns] |
-| fields_ten_fields | [397.27 ns 398.05 ns 399.21 ns] |
+| empty_log         | [22.526 ns 22.541 ns 22.560 ns] |
+| level_off         | [1.6941 ns 1.6989 ns 1.7050 ns] |
+| msg_only          | [63.166 ns 63.172 ns 63.177 ns] |
+| msg_format        | [63.238 ns 63.373 ns 63.548 ns] |
+| fields_only       | [96.944 ns 96.974 ns 97.005 ns] |
+| fields_msg        | [147.03 ns 147.26 ns 147.56 ns] |
+| fields_msg_format | [146.44 ns 146.51 ns 146.58 ns] |
+| fields_ten_fields | [395.31 ns 395.35 ns 395.40 ns] |
 
 - AWS c5.2xlarge, 8C 16G, Ubuntu 22.04
 
 | Name              |              Time               |
 |:------------------|:-------------------------------:|
-| empty_log         | [46.816 ns 46.821 ns 46.827 ns] |
-| level_off         | [2.4240 ns 2.4242 ns 2.4244 ns] |
-| msg_only          | [107.52 ns 107.54 ns 107.55 ns] |
-| msg_format        | [107.49 ns 107.52 ns 107.55 ns] |
-| fields_only       | [186.12 ns 186.17 ns 186.22 ns] |
-| fields_msg        | [257.24 ns 257.29 ns 257.35 ns] |
-| fields_msg_format | [257.20 ns 257.26 ns 257.31 ns] |
-| fields_ten_fields | [709.65 ns 709.72 ns 709.78 ns] |
+| empty_log         | [50.761 ns 50.764 ns 50.768 ns] |
+| level_off         | [4.1800 ns 4.1804 ns 4.1810 ns] |
+| msg_only          | [121.12 ns 121.14 ns 121.16 ns] |
+| msg_format        | [121.18 ns 121.20 ns 121.23 ns] |
+| fields_only       | [177.70 ns 177.74 ns 177.77 ns] |
+| fields_msg        | [264.25 ns 264.33 ns 264.45 ns] |
+| fields_msg_format | [261.80 ns 261.89 ns 261.98 ns] |
+| fields_ten_fields | [654.11 ns 654.31 ns 654.51 ns] |
 
 ## Documentation
 
