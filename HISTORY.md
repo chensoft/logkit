@@ -12,7 +12,10 @@
 ### Added
 
 - Save the source info when the user calls the macros
-- Allow modification of the logger's alloc field
+
+### Removed
+
+- Remove the unnecessary `alloc` field
 
 ## [0.3.4] - 2024-03-13
 

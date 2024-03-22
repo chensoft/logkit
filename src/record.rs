@@ -11,30 +11,28 @@ use super::source::*;
 #[derive(Debug, Clone)]
 pub struct Record {
     level: Level,
-    cache: Vec<u8>,
+    buffer: Vec<u8>,
     source: Source,
 }
 
 impl Record {
     /// Create a new record
     ///
-    /// The `capacity` argument specifies the initial capacity of the buffer.
-    ///
     /// ```
-    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512, logkit::source!());
+    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, logkit::source!());
     /// assert_eq!(record.level(), logkit::LEVEL_TRACE);
     /// ```
     #[inline]
-    pub fn new(level: Level, capacity: usize, source: Source) -> Self {
-        let mut obj = Self {level, cache: Vec::with_capacity(capacity), source};
-        obj.cache.push(b'{');
+    pub fn new(level: Level, source: Source) -> Self {
+        let mut obj = Self {level, buffer: vec![], source};
+        obj.buffer.push(b'{');
         obj
     }
 
     /// Reset record for reuse
     ///
     /// ```
-    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512, logkit::source!());
+    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, logkit::source!());
     /// assert_eq!(record.level(), logkit::LEVEL_TRACE);
     ///
     /// record = logkit::Record::set(record, logkit::LEVEL_ERROR, logkit::source!());
@@ -43,7 +41,7 @@ impl Record {
     #[inline]
     pub fn set(mut record: Record, level: Level, source: Source) -> Self {
         record.level = level;
-        record.cache.truncate(1); // preserve '{'
+        record.buffer.truncate(1); // preserve '{'
         record.source = source;
         record
     }
@@ -67,7 +65,7 @@ impl Record {
     /// Note that duplicate fields are not filtered out.
     ///
     /// ```
-    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512, logkit::source!());
+    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, logkit::source!());
     /// record.append("pid", &12345);
     /// record.append("msg", &"think outside the box");
     /// record.finish();
@@ -75,40 +73,40 @@ impl Record {
     /// ```
     #[inline]
     pub fn append(&mut self, key: &str, val: &impl Encode) -> &mut Self {
-        key.encode(&mut self.cache);
-        self.cache.push(b':');
-        val.encode(&mut self.cache);
-        self.cache.push(b',');
+        key.encode(&mut self.buffer);
+        self.buffer.push(b':');
+        val.encode(&mut self.buffer);
+        self.buffer.push(b',');
         self
     }
 
     /// Mark the end of the record
     ///
     /// ```
-    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512, logkit::source!());
+    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, logkit::source!());
     /// record.finish();
     /// assert_eq!(String::from_utf8_lossy(record.buffer().as_slice()), "{}\n");
     /// ```
     #[inline]
     pub fn finish(&mut self) {
-        match self.cache.last_mut() {
+        match self.buffer.last_mut() {
             Some(val) if *val == b',' => *val = b'}',
-            _ => self.cache.push(b'}'),
+            _ => self.buffer.push(b'}'),
         }
 
-        self.cache.push(b'\n');
+        self.buffer.push(b'\n');
     }
 
     /// Get the final buffer
     ///
     /// ```
-    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, 512, logkit::source!());
+    /// let mut record = logkit::Record::new(logkit::LEVEL_TRACE, logkit::source!());
     /// record.append("msg", &"less is more");
     /// record.finish();
     /// assert_eq!(String::from_utf8_lossy(record.buffer().as_slice()), "{\"msg\":\"less is more\"}\n");
     /// ```
     #[inline]
     pub fn buffer(&self) -> &Vec<u8> {
-        &self.cache
+        &self.buffer
     }
 }

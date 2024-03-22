@@ -10,9 +10,7 @@ use super::target::*;
 /// Responsible for setting the log level, spawning log records, and managing plugins, targets,
 /// and all other logging functionalities.
 pub struct Logger {
-    level: Level, // log level filter
-    alloc: usize, // record init capacity
-
+    barrier: Level,                       // log level filter
     records: Mutex<Vec<Record>>,          // records pool
     plugins: Vec<Box<dyn Plugin>>,        // middlewares
     targets: Vec<Box<dyn Target>>,        // output targets
@@ -30,8 +28,7 @@ impl Logger {
     /// ```
     pub const fn new(default: Option<&'static dyn Target>) -> Self {
         Self {
-            level: LEVEL_TRACE,
-            alloc: 512,
+            barrier: LEVEL_TRACE,
             records: Mutex::new(vec![]),
             plugins: vec![],
             targets: vec![],
@@ -55,7 +52,7 @@ impl Logger {
     /// ```
     #[inline]
     pub fn level(&self) -> Level {
-        self.level
+        self.barrier
     }
 
     /// Set current log level
@@ -67,7 +64,7 @@ impl Logger {
     /// assert_eq!(logkit::default_logger().level(), logkit::LEVEL_INFO);
     /// ```
     pub fn limit(&mut self, level: Level) -> &mut Self {
-        self.level = level;
+        self.barrier = level;
         self
     }
 
@@ -86,21 +83,7 @@ impl Logger {
     /// ```
     #[inline]
     pub fn allow(&self, level: Level) -> bool {
-        level >= self.level
-    }
-
-    /// Set the init capacity of a record and return the old value
-    ///
-    /// ```
-    /// let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
-    /// logger.cache(256);
-    /// assert_eq!(logger.cache(512), 256);
-    /// ```
-    #[inline]
-    pub fn cache(&mut self, val: usize) -> usize {
-        let old = self.alloc;
-        self.alloc = val;
-        old
+        level >= self.barrier
     }
 
     /// Install a plugin for records
@@ -215,7 +198,7 @@ impl Logger {
         };
 
         let mut record = match record {
-            None => Record::new(level, self.alloc, source),
+            None => Record::new(level, source),
             Some(val) => Record::set(val, level, source),
         };
 
