@@ -8,6 +8,7 @@ static mut DEFAULT_LOGGER: Logger = Logger::new(Some(&StderrTarget));
 ///
 /// This logger uses stderr as its default output target.
 #[inline]
+#[allow(renamed_and_removed_lints)] // 1.77+ static_mut_ref renamed to static_mut_refs
 #[allow(unknown_lints)]
 #[allow(static_mut_ref)]
 pub fn default_logger() -> &'static Logger {
