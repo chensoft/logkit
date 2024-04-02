@@ -1,7 +1,7 @@
 #[macro_use] extern crate logkit;
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> std::io::Result<()> {
     let mut logger = logkit::Logger::new(Some(&logkit::StdoutTarget));
     logger.mount(logkit::LevelPlugin);
     logger.mount(logkit::TimePlugin::from_millis());
