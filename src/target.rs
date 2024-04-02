@@ -56,7 +56,7 @@ impl Target for StderrTarget {
 /// Write to a file
 ///
 /// ```
-/// fn main() -> anyhow::Result<()> {
+/// fn main() -> std::io::Result<()> {
 ///     let mut sample = std::env::temp_dir();
 ///     sample.push("sample.log");
 ///
@@ -74,7 +74,7 @@ pub struct FileTarget {
 
 impl FileTarget {
     /// Create a FileTarget with a path
-    pub fn new(path: impl AsRef<Path>) -> anyhow::Result<Self> {
+    pub fn new(path: impl AsRef<Path>) -> std::io::Result<Self> {
         if let Some(dir) = path.as_ref().parent() {
             std::fs::create_dir_all(dir)?;
         }

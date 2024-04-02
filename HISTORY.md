@@ -15,6 +15,7 @@
 
 ### Removed
 
+- Remove anyhow
 - Remove the unnecessary `alloc` field
 
 ## [0.3.4] - 2024-03-13
