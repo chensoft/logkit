@@ -1,13 +1,4 @@
-## Todo
-
-- predefined fields do not need invoked every time
-- async write support and thread local
-- log rotate by filesize, lineno, daily, hourly...
-- color support in console output
-- highlight keywords in console output
-- sampling by level
-
-## [Unreleased] - 2024-0x-xx
+## [0.3.5] - 2024-05-18
 
 ### Added
 
@@ -98,3 +89,12 @@
 - logging with an optional stack trace
 - the output order of the fields is fixed
 - the plugin can cancel the output of a log entry midway
+
+## Todo
+
+- predefined fields do not need invoked every time
+- async write support and thread local
+- log rotate by filesize, lineno, daily, hourly...
+- color support in console output
+- highlight keywords in console output
+- sampling by level
