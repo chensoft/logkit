@@ -92,8 +92,8 @@ impl Logger {
     ///
     /// ```
     /// let mut logger = logkit::Logger::new(Some(&logkit::StderrTarget));
-    /// logger.mount(logkit::LevelPlugin);
     /// logger.mount(logkit::TimePlugin::from_millis());
+    /// logger.mount(logkit::LevelPlugin);
     /// logkit::set_default_logger(logger);
     /// ```
     pub fn mount(&mut self, plugin: impl Plugin) -> &mut Self {

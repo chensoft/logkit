@@ -2,8 +2,8 @@
 
 fn main() {
     let mut logger = logkit::Logger::new(Some(&logkit::StdoutTarget));
-    logger.mount(logkit::LevelPlugin);
     logger.mount(logkit::TimePlugin::from_millis());
+    logger.mount(logkit::LevelPlugin);
     logger.mount(logkit::SourcePlugin);
     logkit::set_default_logger(logger);
 

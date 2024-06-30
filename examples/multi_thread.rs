@@ -3,8 +3,8 @@
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
     let mut logger = logkit::Logger::new(Some(&logkit::StdoutTarget));
-    logger.mount(logkit::LevelPlugin);
     logger.mount(logkit::TimePlugin::from_millis());
+    logger.mount(logkit::LevelPlugin);
 
     let mut sample = std::env::temp_dir();
     sample.push("sample.log");
