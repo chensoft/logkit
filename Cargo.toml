@@ -8,7 +8,7 @@ description = "Super fast, structured, scalable logging library for Rust"
 documentation = "https://docs.rs/logkit"
 repository = "https://github.com/chensoft/logkit"
 readme = "README.md"
-keywords = ["logkit", "log", "logger", "logging"]
+keywords = ["log", "logger", "logging"]
 
 [features]
 default = ["trace", "debug", "info", "warn", "error"]
@@ -19,7 +19,7 @@ warn = []
 error = []
 
 [dependencies]
-chrono = "0.4"
+time = { version = "0.3", features = ["local-offset", "formatting"] }
 encoder = "0.2"
 backtrace = "0.3"
 

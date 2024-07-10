@@ -57,10 +57,13 @@ impl Plugin for LevelPlugin {
     }
 }
 
-/// Add a rfc3339 datetime string to a record
+/// Add a datetime string to a record
 pub struct TimePlugin {
+    /// local or utc
+    pub local: bool,
+
     /// time format
-    pub format: chrono::SecondsFormat,
+    pub format: time::format_description::OwnedFormatItem,
 }
 
 impl TimePlugin {
@@ -70,7 +73,7 @@ impl TimePlugin {
     /// {"time":"2024-01-03T11:01:00+08:00"}
     /// ```
     pub fn from_secs() -> Self {
-        Self {format: chrono::SecondsFormat::Secs}
+        Self { local: true, format: time::format_description::parse_owned::<2>("[year]-[month]-[day]T[hour]:[minute]:[second][offset_hour sign:mandatory]:[offset_minute]").unwrap_or_else(|_| unreachable!()) }
     }
 
     /// Millisecond-level precision
@@ -79,7 +82,7 @@ impl TimePlugin {
     /// {"time":"2024-01-03T11:01:00.123+08:00"}
     /// ```
     pub fn from_millis() -> Self {
-        Self {format: chrono::SecondsFormat::Millis}
+        Self { local: true, format: time::format_description::parse_owned::<2>("[year]-[month]-[day]T[hour]:[minute]:[second].[subsecond digits:3][offset_hour sign:mandatory]:[offset_minute]").unwrap_or_else(|_| unreachable!()) }
     }
 
     /// Microsecond-level precision
@@ -88,7 +91,7 @@ impl TimePlugin {
     /// {"time":"2024-01-03T11:01:00.123456+08:00"}
     /// ```
     pub fn from_micros() -> Self {
-        Self {format: chrono::SecondsFormat::Micros}
+        Self { local: true, format: time::format_description::parse_owned::<2>("[year]-[month]-[day]T[hour]:[minute]:[second].[subsecond digits:6][offset_hour sign:mandatory]:[offset_minute]").unwrap_or_else(|_| unreachable!()) }
     }
 
     /// Nanosecond-level precision
@@ -97,15 +100,29 @@ impl TimePlugin {
     /// {"time":"2024-01-03T11:01:00.123456789+08:00"}
     /// ```
     pub fn from_nanos() -> Self {
-        Self {format: chrono::SecondsFormat::Nanos}
+        Self { local: true, format: time::format_description::parse_owned::<2>("[year]-[month]-[day]T[hour]:[minute]:[second].[subsecond digits:9][offset_hour sign:mandatory]:[offset_minute]").unwrap_or_else(|_| unreachable!()) }
+    }
+
+    /// Use UTC for formatting
+    ///
+    /// ```json,no_run
+    /// {"time":"2024-01-03T03:01:00+00:00"}
+    /// ```
+    pub fn use_utc(mut self) -> Self {
+        self.local = false;
+        self
     }
 }
 
 impl Plugin for TimePlugin {
     #[inline]
     fn pre(&self, record: &mut Record) -> bool {
-        let now = chrono::Local::now();
-        record.append("time", &now.to_rfc3339_opts(self.format, false));
+        let now = match self.local {
+            true => time::OffsetDateTime::now_local().unwrap_or(time::OffsetDateTime::now_utc()),
+            false => time::OffsetDateTime::now_utc(),
+        };
+
+        record.append("time", &now.format(&self.format).unwrap_or_default());
         true
     }
 }

@@ -1,3 +1,14 @@
+## [Unreleased] - 2024-00-00
+
+### Added
+
+- Allow custom formatting in TimePlugin
+- Allow switching between UTC and Local Time in TimePlugin
+
+### Changed
+
+- Use time crate to do more flexible formatting
+
 ## [0.3.5] - 2024-05-18
 
 ### Added
