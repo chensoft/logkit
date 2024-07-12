@@ -1,5 +1,6 @@
 #![doc = include_str!("../README.md")]
 #![warn(missing_docs)]
+#![allow(clippy::needless_doctest_main)]
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::let_underscore_future)]
 
 pub mod define;

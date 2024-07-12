@@ -150,6 +150,12 @@ impl SourcePlugin {
     }
 }
 
+impl Default for SourcePlugin {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Plugin for SourcePlugin {
     #[inline]
     fn post(&self, record: &mut Record) -> bool {
