@@ -4,6 +4,7 @@
 
 - Allow custom formatting in TimePlugin
 - Allow switching between UTC and Local Time in TimePlugin
+- Allow set level limit for SourcePlugin
 
 ### Changed
 

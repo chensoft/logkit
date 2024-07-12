@@ -132,12 +132,30 @@ impl Plugin for TimePlugin {
 /// ```json,no_run
 /// {"src":"examples/hello_world.rs:9"}
 /// ```
-pub struct SourcePlugin;
+pub struct SourcePlugin {
+    /// logs equal or greater than this level will include source info
+    pub level: Level,
+}
+
+impl SourcePlugin {
+    /// Create default plugin
+    pub fn new() -> Self {
+        Self { level: LEVEL_TRACE }
+    }
+
+    /// Create from level
+    pub fn level(mut self, level: Level) -> Self {
+        self.level = level;
+        self
+    }
+}
 
 impl Plugin for SourcePlugin {
     #[inline]
     fn post(&self, record: &mut Record) -> bool {
-        record.append("src", &format!("{}:{}", record.source().file, record.source().line));
+        if record.level() >= self.level {
+            record.append("src", &format!("{}:{}", record.source().file, record.source().line));
+        }
         true
     }
 }
