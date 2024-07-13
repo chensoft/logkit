@@ -59,11 +59,14 @@ impl Plugin for LevelPlugin {
 
 /// Add a datetime string to a record
 pub struct TimePlugin {
-    /// local or utc
-    pub local: bool,
-
     /// time format
     pub format: chrono::SecondsFormat,
+
+    /// utc or local
+    pub utc: bool,
+
+    /// use Z instead of +00:00
+    pub z: bool,
 }
 
 impl TimePlugin {
@@ -73,7 +76,7 @@ impl TimePlugin {
     /// {"time":"2024-01-03T11:01:00+08:00"}
     /// ```
     pub fn from_secs() -> Self {
-        Self { local: true, format: chrono::SecondsFormat::Secs }
+        Self { format: chrono::SecondsFormat::Secs, utc: false, z: false }
     }
 
     /// Millisecond-level precision
@@ -82,7 +85,7 @@ impl TimePlugin {
     /// {"time":"2024-01-03T11:01:00.123+08:00"}
     /// ```
     pub fn from_millis() -> Self {
-        Self { local: true, format: chrono::SecondsFormat::Millis }
+        Self { format: chrono::SecondsFormat::Millis, utc: false, z: false }
     }
 
     /// Microsecond-level precision
@@ -91,7 +94,7 @@ impl TimePlugin {
     /// {"time":"2024-01-03T11:01:00.123456+08:00"}
     /// ```
     pub fn from_micros() -> Self {
-        Self { local: true, format: chrono::SecondsFormat::Micros }
+        Self { format: chrono::SecondsFormat::Micros, utc: false, z: false }
     }
 
     /// Nanosecond-level precision
@@ -100,7 +103,7 @@ impl TimePlugin {
     /// {"time":"2024-01-03T11:01:00.123456789+08:00"}
     /// ```
     pub fn from_nanos() -> Self {
-        Self { local: true, format: chrono::SecondsFormat::Nanos }
+        Self { format: chrono::SecondsFormat::Nanos, utc: false, z: false }
     }
 
     /// Use UTC for formatting
@@ -109,7 +112,17 @@ impl TimePlugin {
     /// {"time":"2024-01-03T03:01:00+00:00"}
     /// ```
     pub fn use_utc(mut self) -> Self {
-        self.local = false;
+        self.utc = true;
+        self
+    }
+
+    /// Use Z instead of +00:00
+    ///
+    /// ```json,no_run
+    /// {"time":"2024-01-03T03:01:00Z"}
+    /// ```
+    pub fn use_z(mut self) -> Self {
+        self.z = true;
         self
     }
 }
@@ -117,9 +130,9 @@ impl TimePlugin {
 impl Plugin for TimePlugin {
     #[inline]
     fn pre(&self, record: &mut Record) -> bool {
-        let now = match self.local {
-            true => chrono::Local::now().to_rfc3339_opts(self.format, false),
-            false => chrono::Utc::now().to_rfc3339_opts(self.format, false),
+        let now = match self.utc {
+            true => chrono::Utc::now().to_rfc3339_opts(self.format, self.z),
+            false => chrono::Local::now().to_rfc3339_opts(self.format, self.z),
         };
 
         record.append("time", &now);

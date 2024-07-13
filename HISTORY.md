@@ -1,4 +1,8 @@
-## [Unreleased] - 2024-xx-xx
+## [0.3.7] - 2024-07-13
+
+### Added
+
+- allow use 'Z' instead of '+00:00' for utc formatting
 
 ### Changed
 
