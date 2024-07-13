@@ -1,3 +1,9 @@
+## [Unreleased] - 2024-xx-xx
+
+### Changed
+
+- Use chrono for correct and faster local time format
+
 ## [0.3.6] - 2024-07-12
 
 ### Added

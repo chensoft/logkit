@@ -72,7 +72,7 @@ fn fields_ten_fields(c: &mut Criterion) {
     let logger = logkit::Logger::nop();
     logkit::set_default_logger(logger);
 
-    let timestamp = time::OffsetDateTime::now_utc().unix_timestamp();
+    let timestamp = chrono::Utc::now().timestamp();
     let mut object: HashMap<&str, &dyn logkit::Encode> = HashMap::new();
     object.insert("author", &"Jian Chen");
     object.insert("github", &"https://github.com/chensoft");
